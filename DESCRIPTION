@@ -1,0 +1,11 @@
+Package: tandoori
+Type: Package
+Title: Tools for projecting tuna operating models 
+Version: 0.1
+Date: 2025-03-27
+Author: Finlay Scott
+Maintainer: Finlay Scott <drfinlayscott@gmail.com>
+Description: Tools for projecting tuna operating models. Uses a combination of R and C++. CppAD source code is also included so that automatic differentiation can be used.
+License: GPL (>= 2) 
+Imports: Rcpp (>= 1.0.13)
+LinkingTo: Rcpp
