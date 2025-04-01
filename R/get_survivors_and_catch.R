@@ -9,7 +9,20 @@
 
 # Add man page with expected dims - see example below
 
-get_survivors_and_catch <- function(effort, n, m, mat, movement, sel, catch_q, fishery_area){
+#' Get survivors and catch numbers at age in a time step
+#'
+#' Follows population and fishing dynamics from Multfan-CL.
+#' Movement, followed by death (natural mortality and fishing).
+#' @param effort Vector of effort
+#' @param n N at age
+#' @param m Natural mortality at age
+#' @param movement Movement rates between model regions
+#' @param sel Selectivity at age
+#' @param catch_q Catchability
+#' @param fishery_area Vector of which model region each fishery operates in 
+#' @return A list of survivors and catch numbers at age
+#' @export
+get_survivors_and_catch <- function(effort, n, m, movement, sel, catch_q, fishery_area){
   nareas <- dim(n)[5]
   
   # Get f by fishery
@@ -100,7 +113,7 @@ get_survivors_and_catch <- function(effort, n, m, mat, movement, sel, catch_q, f
 #
 ## Excluding recruitment
 #test_nc <- get_survivors_and_catch(effort=effortt,
-#                     n = nt, m=mt, mat=matt, movement=movementt,
+#                     n = nt, m=mt, movement=movementt,
 #                     sel=selt, catch_q=catch_qt, fishery_area=fishery_area)
 #
 ## Check numbers at age
