@@ -14,7 +14,7 @@
 #' Follows population and fishing dynamics from Multfan-CL.
 #' Movement, followed by death (natural mortality and fishing).
 #' @param effort Vector of effort
-#' @param n N at age
+#' @param pop_n N at age
 #' @param m Natural mortality at age
 #' @param movement Movement rates between model regions
 #' @param sel Selectivity at age
@@ -22,15 +22,15 @@
 #' @param fishery_area Vector of which model region each fishery operates in 
 #' @return A list of survivors and catch numbers at age
 #' @export
-get_survivors_and_catch <- function(effort, n, m, movement, sel, catch_q, fishery_area){
-  nareas <- dim(n)[5]
-  
+get_survivors_and_catch <- function(effort, pop_n, m, movement, sel, catch_q, fishery_area){
+ 
+  nareas <- dim(pop_n)[5]
   # Get f by fishery
   selq <- sweep(sel, c(2,3,4,5,6), catch_q, "*")
   f <- sweep(selq, c(2:6), effort, "*")
   
   # But we also need f by area (so we can calculate total Z in an area)
-  farea <- expand(f, area=dimnames(n)$area)
+  farea <- expand(f, area=dimnames(pop_n)$area)
   farea[] <- 0
   for(area in 1:nareas){
     farea[,,fishery_area==area,,area] <- f[,,fishery_area == area]
@@ -44,8 +44,8 @@ get_survivors_and_catch <- function(effort, n, m, movement, sel, catch_q, fisher
   catch_out <- farea
   catch_out[] <- NA
   
-  nages <- dim(n)[1]
-  n_out <- n
+  nages <- dim(pop_n)[1]
+  n_out <- pop_n
   n_out[] <- NA
   n_after_move <- n_out
   
@@ -53,7 +53,7 @@ get_survivors_and_catch <- function(effort, n, m, movement, sel, catch_q, fisher
   # General rule: movement then death, so death applied to moved population
   for (age_count in 1:nages){
     # Movement happens
-    n_after_move[age_count] <- movement[,, age_count] %*% n[age_count,]
+    n_after_move[age_count] <- movement[,, age_count] %*% pop_n[age_count,]
     # survivors
     n_out[age_count] <- n_after_move[age_count] * exp(-total_z[age_count,])
     # Apply death to moved population and get catch
@@ -113,7 +113,7 @@ get_survivors_and_catch <- function(effort, n, m, movement, sel, catch_q, fisher
 #
 ## Excluding recruitment
 #test_nc <- get_survivors_and_catch(effort=effortt,
-#                     n = nt, m=mt, movement=movementt,
+#                     pop_n = nt, m=mt, movement=movementt,
 #                     sel=selt, catch_q=catch_qt, fishery_area=fishery_area)
 #
 ## Check numbers at age

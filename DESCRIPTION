@@ -1,17 +1,31 @@
 Package: tandoori
+Title: Tools for projecting tuna operating models 
 Version: 0.1
 Date: 2025-03-27
-Title: Tools for projecting tuna operating models 
 Authors@R: c(person("Finlay", "Scott", role=c("aut","cre"), email="drfinlayscott@gmail.com"),
              person("Robert", "Scott", role="aut"))
-Depends: R (>= 3.5.0), FLCore
-Imports: Rcpp (>= 1.0.13), methods, tools, utils
-Suggests: mapdata, knitr, rmarkdown
-LinkingTo: Rcpp
 Description: Tools for projecting tuna operating models. Uses a combination of R and C++. CppAD source code is also included so that automatic differentiation can be used.
+Depends:
+  R (>= 4.0),
+  methods,
+  FLCore (>= 2.6.19.9032),
+  ggplotFL
+Imports:
+  Rcpp (>= 1.0.13),
+  tools,
+  utils
+Suggests:
+  knitr,
+  rmarkdown
+LinkingTo: Rcpp
 License: GPL (>= 2) 
 LazyLoad: Yes
 LazyData: No
+Collate:
+  get_recruitment.R
+  get_survivors_and_catch.R
+  RcppExports.R
+  data.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

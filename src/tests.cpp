@@ -26,7 +26,7 @@ double simple_array_2D_get_accessor_test(simple_array_2D sa2d, const int x, cons
 
 
 // [[Rcpp::export]]
-simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_array_2D n, Rcpp::IntegerVector fishery_map){
+simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_array_2D n, Rcpp::IntegerVector fishery_area){
 	// implement:
 	// (f / f + m) * (1 - exp(-f -m)) * n
 	// Looking for catch by fishery
@@ -39,7 +39,7 @@ simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_arra
 	// Loop over fishery
 	for (int fcount = 0; fcount < nfisheries; fcount++){
 		// Get area that fishery is operating in - need fishery map - vector of length nfisheries
-		const int area_index = fishery_map[fcount] - 1;
+		const int area_index = fishery_area[fcount] - 1;
 		for(int acount = 0; acount < nages; acount++){
 			double z = f(acount, fcount) + m(acount, area_index);
 			catch_out(acount, fcount) = (f(acount, fcount) / z) * (1 - exp(-1 * z)) * n(acount, area_index); 
@@ -53,11 +53,11 @@ simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_arra
 
 
 // [[Rcpp::export]]
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_map){
+Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_area){
   
   // Do it
   //Rcpp::NumericVector out;
-  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_map);
+  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_area);
   
   //simple_array_2D catch_out;
   //simple_array_2D effort_out;
@@ -69,14 +69,14 @@ Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m,
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_map){
+Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area){
   
   std::vector<adouble> effort(selq.get_dim()[1], 0.0);
   std::transform(effort_in.begin(), effort_in.end(), effort.begin(),
                  [](double x) { return x; } );
 
   
-  std::vector<adouble> cwt = get_catch_wt(effort, n_after_move, m, waa, selq, fishery_map);
+  std::vector<adouble> cwt = get_catch_wt(effort, n_after_move, m, waa, selq, fishery_area);
     
   Rcpp::NumericVector out(cwt.size());
   std::transform(cwt.begin(), cwt.end(), out.begin(),

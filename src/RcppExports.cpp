@@ -47,22 +47,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_catch_demo
-simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_array_2D n, Rcpp::IntegerVector fishery_map);
-RcppExport SEXP _tandoori_get_catch_demo(SEXP fSEXP, SEXP mSEXP, SEXP nSEXP, SEXP fishery_mapSEXP) {
+simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_array_2D n, Rcpp::IntegerVector fishery_area);
+RcppExport SEXP _tandoori_get_catch_demo(SEXP fSEXP, SEXP mSEXP, SEXP nSEXP, SEXP fishery_areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< simple_array_2D >::type f(fSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type n(nSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_map(fishery_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_catch_demo(f, m, n, fishery_map));
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_catch_demo(f, m, n, fishery_area));
     return rcpp_result_gen;
 END_RCPP
 }
 // find_effort
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_map);
-RcppExport SEXP _tandoori_find_effort(SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP catch_targetSEXP, SEXP fishery_mapSEXP) {
+Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_area);
+RcppExport SEXP _tandoori_find_effort(SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP catch_targetSEXP, SEXP fishery_areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -72,14 +72,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
     Rcpp::traits::input_parameter< double >::type effort_mult_initial(effort_mult_initialSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type catch_target(catch_targetSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_map(fishery_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_effort(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_map));
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_effort(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_area));
     return rcpp_result_gen;
 END_RCPP
 }
 // test_catch_weight
-Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_map);
-RcppExport SEXP _tandoori_test_catch_weight(SEXP effort_inSEXP, SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP fishery_mapSEXP) {
+Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area);
+RcppExport SEXP _tandoori_test_catch_weight(SEXP effort_inSEXP, SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP fishery_areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -88,8 +88,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type waa(waaSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_map(fishery_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_catch_weight(effort_in, n_after_move, m, waa, selq, fishery_map));
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_catch_weight(effort_in, n_after_move, m, waa, selq, fishery_area));
     return rcpp_result_gen;
 END_RCPP
 }

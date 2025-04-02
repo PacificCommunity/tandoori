@@ -11,10 +11,10 @@
 // waa: nage x narea
 // selq: nage x nunit
 // initial_effort_mult: nunit
-// fishery_map: nunit
+// fishery_area: nunit
 
 // Given the fishing effort, return the catch wt given all the other information
-std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_map){
+std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_area){
   // Chatty mode
   bool verbose = false;
   if(verbose){Rprintf("\nIn get_catch_wt()\n");}
@@ -31,7 +31,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
     std::vector<adouble> f_fishery(nfisheries,0.0);
     for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
       // Get F by fishery
-      auto area_index = fishery_map[fishery_count] - 1;
+      auto area_index = fishery_area[fishery_count] - 1;
       f_fishery[fishery_count] = effort[fishery_count] * selq(age_count, fishery_count);
       // Add all individual Fs to total Z
       total_z[area_index] += f_fishery[fishery_count];
@@ -42,7 +42,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
     }
     // Now get catch by fishery
     for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
-      auto area_index = fishery_map[fishery_count] - 1;
+      auto area_index = fishery_area[fishery_count] - 1;
       adouble catch_n_temp = (f_fishery[fishery_count] / total_z[area_index]) * (1 - exp(-1 * total_z[area_index])) * n_after_move(age_count, area_index);
       // Multiply CN at age by Waa and sum into total catch wt
       total_catch_wt[fishery_count] += catch_n_temp * waa(age_count, area_index);
@@ -171,7 +171,6 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   
   if(verbose){Rprintf("Calling solver\n");}
   int solver_code = 0;
-  // Fucking linking error when I include this
   std::vector<double> effort_mult(nfisheries, effort_mult_initial);
   solver_code = newton_raphson(effort_mult, fun, 50, 1.5e-8);
   if(verbose){Rprintf("Done solving\n");}
