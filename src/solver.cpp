@@ -95,8 +95,22 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         // Solve to get w = f(x0) / f'(x0)
         // Jacobian must be square - i.e no of indeps must equal no. deps
         CppAD::LuSolve(nindep, 1, jac, y, delta_indep, logdet); 
+        if(verbose){
+          Rprintf("logdet: %f\n", logdet);
+        }
+        // This error message is not quite right.
+        // If all errror projection, then jacobian is a diagonal matrix which also sets logdet to 0.
+        // However, this is not a problem, and the sovled system is OK.
+        // The problem is when the target for a fishery is 0, and selq is 0, meaning that any effort mult is a solution.
+        // This results in an infinite number of solutions and a problem.
+        // Anyway to detect this special case?
+        // Two situations where logdet == 0.
+        // Catch target of 0 for a fishery with selq = 0 (any effort mult = catch of 0 - infinite solutions) - LUSolve gives bad solution
+        // All effort targets - LUSolve is OK but doesn't need solving anyway
+        // Reinstate error message and don't call solver if all effort targets
+        
         if(logdet == 0.0){
-          Rcpp::stop("In solver. LUSolve returned logdet == 0 which means it is computationally singular. This Probably means an infinite number of solutions to the linear system Jac * x = y. This probably means that any value of effort mult will hit your catch target, and this probably means that your selq is 0 for all ages for at least one fishery.\n");
+          Rcpp::stop("In solver. LUSolve returned logdet == 0.\nThis potentially means that the system is computationally singular.\i.e. there are an infinite number of solutions to the linear system Jac * x = y.\nAnd this means that any value of effort mult will hit your target.\nAnd this probably means that your selq is 0 for all ages for at least one fishery.\n");
         }
         
         if(verbose){

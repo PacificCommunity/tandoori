@@ -53,18 +53,10 @@ simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_arra
 
 
 // [[Rcpp::export]]
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_area){
+Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
   
-  // Do it
-  //Rcpp::NumericVector out;
-  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_area);
+  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area);
   
-  //simple_array_2D catch_out;
-  //simple_array_2D effort_out;
-  
-  
-  //return Rcpp::List::create(Rcpp::Named("catch_out", catch_out),
-  //                          Rcpp::Named("effort_out", effort_out));
   return out;
 }
 

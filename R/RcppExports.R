@@ -17,8 +17,8 @@ get_catch_demo <- function(f, m, n, fishery_area) {
     .Call(`_tandoori_get_catch_demo`, f, m, n, fishery_area)
 }
 
-find_effort <- function(n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_area) {
-    .Call(`_tandoori_find_effort`, n_after_move, m, waa, selq, effort_mult_initial, catch_target, fishery_area)
+find_effort <- function(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area) {
+    .Call(`_tandoori_find_effort`, n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area)
 }
 
 test_catch_weight <- function(effort_in, n_after_move, m, waa, selq, fishery_area) {

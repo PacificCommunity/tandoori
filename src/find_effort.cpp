@@ -53,16 +53,37 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
 }
 
 
-
-Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector catch_target, Rcpp::IntegerVector fishery_map){
+// target_type: 0 = catch, 1 = effort
+Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
   // Chatty mode
   bool verbose = false;
   if(verbose){Rprintf("\nIn run()\n");}
+  
   // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
   auto nages = selq.get_dim()[0];
   auto nareas = n_after_move.get_dim()[1];
   auto nfisheries = selq.get_dim()[1];
   if(verbose){Rprintf("Number of fisheries to solve effort for: %i\n", nfisheries);}
+  
+  // Make initial effort vector
+  double effort_initial = 1.0;
+  Rcpp::NumericVector effort(nfisheries, effort_initial);
+  std::vector<adouble> effort_ad(nfisheries, effort_initial);
+  
+  // Special case. If target type is all effort, don't do any solving. Just return target effort.
+  bool all_effort_targets = true;
+  for(int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
+    // Any target type is catch, then not all effort targets
+    if(target_type[fishery_count] == 0){
+      all_effort_targets = false;
+    }
+  }
+  if(all_effort_targets){
+    if(verbose){Rprintf("All effort targets. Loading return effort with target and returning.\n");}
+    // Load output effort with target and exit
+    effort = target;
+    return effort;
+  }
   
   // Make an adouble vector version of the initial mult so every fishery has an initial effort mult
   // This will be the independent variable 
@@ -70,9 +91,6 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial); // Do we need this fill?
   if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));}
   
-  // Make initial effort vector
-  double effort_initial = 1.0;
-  std::vector<adouble> effort_ad(nfisheries, effort_initial);
   
   // Don't print any Value() things when inside the tape - it bombs!!!
   /* ***************************************************************** */
@@ -91,22 +109,40 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   // Calculate error
   std::vector<adouble> error(nfisheries);
   if(verbose){Rprintf("\nCalculating error\n");}
-  std::transform(catch_target.begin(), catch_target.end(), total_catch_weight_ad.begin(), error.begin(),
-      [](double x, adouble y){return y - x;});
+  // Go fishery by fishery
+  // If target_type == 0, then catch target
+  // If target_type == 1, then effort target
+  // Get error as appropriate
+  for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
+    // Catch target
+    if(target_type[fishery_count] == 0){
+      error[fishery_count] = target[fishery_count] - total_catch_weight_ad[fishery_count];
+      // Forgot - you can't print things out when being taped
+    } else if(target_type[fishery_count] == 1){
+      error[fishery_count] = target[fishery_count] - effort_ad[fishery_count];
+      //Rprintf("fishery: %i Effort target. target: %f  effort_ad: %f error: %f\n", fishery_count, target[fishery_count], Value(effort_ad[fishery_count]), Value(error[fishery_count]));
+    } else {
+      Rcpp::stop("Unrecognised target type for fishery %i.", fishery_count);
+    }
+  }
   
   // Turn off tape
   if(verbose){Rprintf("\nTurning off tape and linking effort to error\n");}
   CppAD::ADFun<double> fun(effort_mult_ad, error);
   
+  for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
+    if(target_type[fishery_count] == 0){
+      if(verbose){Rprintf("fishery: %i Catch target. target: %f  catch_hat: %f error: %f\n", fishery_count, target[fishery_count], Value(total_catch_weight_ad[fishery_count]), Value(error[fishery_count]));}
+    } else if(target_type[fishery_count] == 1){
+      if(verbose){Rprintf("fishery: %i Effort target. target: %f  effort_ad: %f error: %f\n", fishery_count, target[fishery_count], Value(effort_ad[fishery_count]), Value(error[fishery_count]));}
+    } else {
+      Rcpp::stop("Unrecognised target type for fishery %i.", fishery_count);
+    }
+  }
+  
   /* ***************************************************************** */
   // Take a look at stuff - just for sanity checking
   if(verbose){
-    Rprintf("target_catch 1: %f catch_hat 1: %f error 1: %f\n", catch_target[0], Value(total_catch_weight_ad[0]), Value(error[0]));
-    Rprintf("\nCatch hat[i]: ");
-    for(int icount=0; icount<nfisheries; icount++){
-      Rprintf(" %f", Value(total_catch_weight_ad[icount]));
-    }
-    Rprintf("\n");
     Rprintf("\nError[i]: ");
     for(int icount=0; icount<nfisheries; icount++){
       Rprintf(" %f", Value(error[icount]));
@@ -116,8 +152,8 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   
   /* ***************************************************************** */
   
-  //// Solve
-  //// Testing CppAD bits
+  // Solve
+  // Testing CppAD bits
   //std::vector<double> y(nfisheries, 1000.0);
   //std::vector<double> delta_indep(nfisheries, 0.0); // For updating indep in final step
   //std::vector<double> jac(nfisheries * nfisheries);
@@ -125,7 +161,7 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //for(int iter=0; iter<10; iter++){
   //  Rprintf("\niter: %i\n", iter);
   //
-  //// Eval the taped function that returns ERROR given effort mult
+  // Eval the taped function that returns ERROR given effort mult
   //y = fun.Forward(0, effort_mult); 
   //Rprintf("\nEval function. y[i]: ");
   //for(int icount=0; icount<nfisheries; icount++){
@@ -134,13 +170,13 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //Rprintf("\n");
   //// Get Jacobian
   //jac = fun.Jacobian(effort_mult);
-  ////Rprintf("\nJacobian[i][j]: ");
-  ////for(int jcount=0; jcount<nfisheries; jcount++){
-  ////  for(int icount=0; icount<nfisheries; icount++){
-  ////    Rprintf(" %f", jac[(jcount * nfisheries) + icount]);
-  ////  }
-  ////  Rprintf("\n");
-  ////}
+  //Rprintf("\nJacobian[i][j]: ");
+  //for(int jcount=0; jcount<nfisheries; jcount++){
+  //  for(int icount=0; icount<nfisheries; icount++){
+  //    Rprintf(" %f", jac[(jcount * nfisheries) + icount]);
+  //  }
+  //  Rprintf("\n");
+  //}
   ////Rprintf("\n");
   //// Solve J x = y
   //double logdet = 0.0; // Used in the CppAD LUsolve function, after solving has log of the determinant
@@ -166,19 +202,14 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   // How to prevent negative effort multiplier? Log?
   
   
-  
-  
-  
   if(verbose){Rprintf("Calling solver\n");}
   int solver_code = 0;
   std::vector<double> effort_mult(nfisheries, effort_mult_initial);
-  solver_code = newton_raphson(effort_mult, fun, 50, 1.5e-8);
+  solver_code = newton_raphson(effort_mult, fun, 50, 1e-9);
   if(verbose){Rprintf("Done solving\n");}
   if(verbose){Rprintf("solver_code: %i\n", solver_code);}
   
-  // Calc effort and return it
-  //std::vector<double> effort(nfisheries, effort_initial);
-  Rcpp::NumericVector effort(nfisheries, effort_initial);
+  // Apply new effort multiplier to effort and return
   std::transform(effort.begin(), effort.end(), effort_mult.begin(), effort.begin(), std::multiplies<double>());
   
   return effort;
