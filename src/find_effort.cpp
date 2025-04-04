@@ -59,7 +59,8 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   bool verbose = false;
   if(verbose){Rprintf("\nIn run()\n");}
   
-  // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
+  // Effort multiplier is the independent value. There is one independent value for each effort, i.e. for each fishery
+  // Change log effort multiplier, to prevent -ve effort values
   auto nages = selq.get_dim()[0];
   auto nareas = n_after_move.get_dim()[1];
   auto nfisheries = selq.get_dim()[1];
@@ -88,18 +89,24 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   // Make an adouble vector version of the initial mult so every fishery has an initial effort mult
   // This will be the independent variable 
   std::vector<adouble> effort_mult_ad(nfisheries, effort_mult_initial);
-  //std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial); // Do we need this fill?
+  std::vector<adouble> log_effort_mult_ad(nfisheries, log(effort_mult_initial)); // Want this to be indep. variable
   if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));}
+  if(verbose){Rprintf("log_effort_mult_ad: %f\n", Value(log_effort_mult_ad[0]));}
   
   
   // Don't print any Value() things when inside the tape - it bombs!!!
   /* ***************************************************************** */
   // Tape has effort_mult_ad as the independent variable
   if(verbose){Rprintf("\nTurning on tape\n");}
-  CppAD::Independent(effort_mult_ad);
+  //CppAD::Independent(effort_mult_ad);
+  CppAD::Independent(log_effort_mult_ad);
   
   if(verbose){Rprintf("\nUpdating effort with multipler\n");}
   // new effort = initial effort * mult
+  
+  // Put exponent of log_effort_multiplier into effort multiplier
+  std::transform(log_effort_mult_ad.begin(), log_effort_mult_ad.end(), effort_mult_ad.begin(), [](adouble x) {return exp(x);});
+  // And multiply to get effort
   std::transform(effort_ad.begin(), effort_ad.end(), effort_mult_ad.begin(), effort_ad.begin(), std::multiplies<adouble>());
   
   // Get catch weight per fishery with that effort
@@ -128,7 +135,8 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   
   // Turn off tape
   if(verbose){Rprintf("\nTurning off tape and linking effort to error\n");}
-  CppAD::ADFun<double> fun(effort_mult_ad, error);
+  //CppAD::ADFun<double> fun(effort_mult_ad, error);
+  CppAD::ADFun<double> fun(log_effort_mult_ad, error);
   
   for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
     if(target_type[fishery_count] == 0){
@@ -141,7 +149,7 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   }
   
   /* ***************************************************************** */
-  // Take a look at stuff - just for sanity checking
+  // Take a look at error
   if(verbose){
     Rprintf("\nError[i]: ");
     for(int icount=0; icount<nfisheries; icount++){
@@ -152,49 +160,50 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   
   /* ***************************************************************** */
   
-  // Solve
   // Testing CppAD bits
   //std::vector<double> y(nfisheries, 1000.0);
   //std::vector<double> delta_indep(nfisheries, 0.0); // For updating indep in final step
   //std::vector<double> jac(nfisheries * nfisheries);
-  //std::vector<double> effort_mult(nfisheries, effort_mult_initial);
-  //for(int iter=0; iter<10; iter++){
+  //std::vector<double> effort_mult_temp(nfisheries, effort_mult_initial);
+  //std::vector<double> log_effort_mult_temp(nfisheries, log(effort_mult_initial));
+  //// First iter looks OK - then bombs
+  //for(int iter=0; iter<3; iter++){
   //  Rprintf("\niter: %i\n", iter);
   //
-  // Eval the taped function that returns ERROR given effort mult
-  //y = fun.Forward(0, effort_mult); 
-  //Rprintf("\nEval function. y[i]: ");
-  //for(int icount=0; icount<nfisheries; icount++){
-  //  Rprintf(" %f", y[icount]);
-  //}
-  //Rprintf("\n");
-  //// Get Jacobian
-  //jac = fun.Jacobian(effort_mult);
-  //Rprintf("\nJacobian[i][j]: ");
-  //for(int jcount=0; jcount<nfisheries; jcount++){
+  //  // Eval the taped function that returns ERROR given effort mult
+  //  y = fun.Forward(0, log_effort_mult_temp); 
+  //  Rprintf("\nEval function. y[i]: ");
   //  for(int icount=0; icount<nfisheries; icount++){
-  //    Rprintf(" %f", jac[(jcount * nfisheries) + icount]);
+  //    Rprintf(" %f", y[icount]);
   //  }
   //  Rprintf("\n");
-  //}
-  ////Rprintf("\n");
-  //// Solve J x = y
-  //double logdet = 0.0; // Used in the CppAD LUsolve function, after solving has log of the determinant
-  //CppAD::LuSolve(nfisheries, 1, jac, y, delta_indep, logdet); 
-  //Rprintf("\nLU Solve. logdet: %f: \n", logdet);
-  //// determinant of jac = signdet * exp(logdet), so if 0 it is a problem
-  //Rprintf("LU Solve. delta_indep[i]: ");
-  //for(int icount=0; icount<nfisheries; icount++){
-  //  Rprintf(" %f", delta_indep[icount]);
-  //}
-  //Rprintf("\n");
-  //// Update effort mult with new effort - but what to do if negative effort - not allowed...
-  //std::transform(effort_mult.begin(), effort_mult.end(), delta_indep.begin(), effort_mult.begin(),std::minus<double>());
-  //Rprintf("\nNew indep[i]: ");
-  //for(int icount=0; icount<nfisheries; icount++){
-  //  Rprintf(" %f", effort_mult[icount]);
-  //}
-  //Rprintf("\n");
+  //  // Get Jacobian
+  //  jac = fun.Jacobian(log_effort_mult_temp);
+  //  //Rprintf("\nJacobian[i][j]: ");
+  //  //for(int jcount=0; jcount<nfisheries; jcount++){
+  //  //  for(int icount=0; icount<nfisheries; icount++){
+  //  //    Rprintf(" %f", jac[(jcount * nfisheries) + icount]);
+  //  //  }
+  //  //  Rprintf("\n");
+  //  //}
+  //  //Rprintf("\n");
+  //  // Solve J x = y
+  //  double logdet = 0.0; // Used in the CppAD LUsolve function, after solving has log of the determinant
+  //  CppAD::LuSolve(nfisheries, 1, jac, y, delta_indep, logdet); 
+  //  Rprintf("\nLU Solve. logdet: %f: \n", logdet);
+  //  // determinant of jac = signdet * exp(logdet), so if 0 it is a problem
+  //  Rprintf("LU Solve. delta_indep[i]: ");
+  //  for(int icount=0; icount<nfisheries; icount++){
+  //    Rprintf(" %f", delta_indep[icount]);
+  //  }
+  //  Rprintf("\n");
+  //  // Update log effort mult with new log effort
+  //  std::transform(log_effort_mult_temp.begin(), log_effort_mult_temp.end(), delta_indep.begin(), log_effort_mult_temp.begin(),std::minus<double>());
+  //  Rprintf("\nNew indep[i]: ");
+  //  for(int icount=0; icount<nfisheries; icount++){
+  //    Rprintf(" %f", log_effort_mult_temp[icount]);
+  //  }
+  //  Rprintf("\n");
   //}
   
   // Is jac being solved OK?
@@ -202,14 +211,21 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   // How to prevent negative effort multiplier? Log?
   
   
+  /* ***************************************************************** */
+  // Solve and exit
+  
+  std::vector<double> effort_mult(nfisheries, effort_mult_initial);
+  std::vector<double> log_effort_mult(nfisheries, log(effort_mult_initial));
   if(verbose){Rprintf("Calling solver\n");}
   int solver_code = 0;
-  std::vector<double> effort_mult(nfisheries, effort_mult_initial);
-  solver_code = newton_raphson(effort_mult, fun, 50, 1e-9);
+  //solver_code = newton_raphson(effort_mult, fun, 50, 1e-9);
+  solver_code = newton_raphson(log_effort_mult, fun, 50, 1e-9);
   if(verbose){Rprintf("Done solving\n");}
   if(verbose){Rprintf("solver_code: %i\n", solver_code);}
   
   // Apply new effort multiplier to effort and return
+  //std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), std::exp<double>());
+  std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x) {return exp(x);});
   std::transform(effort.begin(), effort.end(), effort_mult.begin(), effort.begin(), std::multiplies<double>());
   
   return effort;
