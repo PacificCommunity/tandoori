@@ -131,26 +131,18 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           }
           Rprintf("\n");
         }
-    //    
-    //    // Bluntly enforce limits
-    //    // indep cannot be less than minimum value or greater than maximum value
-    //    // Limit during solving loop to prevent the solver going off to weird places? Yes
-    //    // Or just ID the breached iters at the end and correct them (even though solver may go outside limit on way to solution within limit)
-    //    // Should each indep value have it's own limit? - maybe later
-    //    //for (unsigned int minmax_counter = 0; minmax_counter < indep.size(); ++minmax_counter){
-    //    //    // Have we breached min limit?
-    //    //    if (indep[minmax_counter] <= indep_min){
-    //    //        indep[minmax_counter] = indep_min;
-    //    //        success_code[minmax_counter / nsim_targets] = -2;
-    //    //    }
-    //    //    // Have we breached max limit?
-    //    //    if (indep[minmax_counter] >= indep_max){
-    //    //        indep[minmax_counter] = indep_max;
-    //    //        success_code[minmax_counter / nsim_targets] = -3;
-    //    //    }
-    //    //} 
+        
+        // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
+        // while it trundles around.
+        for (int indep_count = 0; indep_count < nindep; indep_count ++){
+          if (indep[indep_count] >= log(10.0)){
+            if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
+            indep[indep_count] = log(10.0);
+          }
+        }
+        
     }
-    //if(verbose){Rprintf("\nLeaving solver after %i iterations.\n\n", nr_count);}
+    if(verbose){Rprintf("\nLeaving solver after %i iterations.\n\n", nr_count);}
     return success_code;
 }
 

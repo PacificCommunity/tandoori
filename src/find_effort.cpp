@@ -101,6 +101,8 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //CppAD::Independent(effort_mult_ad);
   CppAD::Independent(log_effort_mult_ad);
   
+  
+  
   if(verbose){Rprintf("\nUpdating effort with multipler\n");}
   // new effort = initial effort * mult
   
@@ -108,6 +110,15 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   std::transform(log_effort_mult_ad.begin(), log_effort_mult_ad.end(), effort_mult_ad.begin(), [](adouble x) {return exp(x);});
   // And multiply to get effort
   std::transform(effort_ad.begin(), effort_ad.end(), effort_mult_ad.begin(), effort_ad.begin(), std::multiplies<adouble>());
+  
+  
+  //// Conditional to set max effort - not sure it helps
+  //adouble max_effort = 10.0;
+  //for (int fishery_count= 0; fishery_count < nfisheries; fishery_count++){
+  //  // If effort >  10, then effort = 10
+  //  effort_ad[fishery_count] = CppAD::CondExpGt(effort_ad[fishery_count], max_effort, max_effort, effort_ad[fishery_count]);
+  //}
+  
   
   // Get catch weight per fishery with that effort
   if(verbose){Rprintf("\nGetting catch target hat\n");}
@@ -167,7 +178,7 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //std::vector<double> effort_mult_temp(nfisheries, effort_mult_initial);
   //std::vector<double> log_effort_mult_temp(nfisheries, log(effort_mult_initial));
   //// First iter looks OK - then bombs
-  //for(int iter=0; iter<3; iter++){
+  //for(int iter=0; iter<2; iter++){
   //  Rprintf("\niter: %i\n", iter);
   //
   //  // Eval the taped function that returns ERROR given effort mult
@@ -193,9 +204,9 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   //  Rprintf("\nLU Solve. logdet: %f: \n", logdet);
   //  // determinant of jac = signdet * exp(logdet), so if 0 it is a problem
   //  Rprintf("LU Solve. delta_indep[i]: ");
-  //  for(int icount=0; icount<nfisheries; icount++){
-  //    Rprintf(" %f", delta_indep[icount]);
-  //  }
+  //  //for(int icount=0; icount<nfisheries; icount++){
+  //  //  Rprintf(" %f", delta_indep[icount]);
+  //  //}
   //  Rprintf("\n");
   //  // Update log effort mult with new log effort
   //  std::transform(log_effort_mult_temp.begin(), log_effort_mult_temp.end(), delta_indep.begin(), log_effort_mult_temp.begin(),std::minus<double>());
