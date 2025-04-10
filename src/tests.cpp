@@ -110,12 +110,27 @@ simple_array_3D test_3D_iterator(simple_array_3D sa3d){
 	return sa3d;
 }
 
-// // [[Rcpp:export]]
-//simple_array_2D movement_test(simple_array_2D n_pre_move, simple_array_3D movement){
-//	// Make a new simple_array_2D that is filled with 0s
-//	simple_array_2D n_after_move = n_pre_move;
-//	std::fill(n_after_move.begin(), n_after_move.end(), 0.0);
-//}
+// [[Rcpp::export]]
+simple_array_2D movement_test(simple_array_2D n_pre_move, simple_array_3D movement){
+	simple_array_2D n_after_move = get_n_after_movement(n_pre_move, movement);
+
+	//// Make a new simple_array_2D that is filled with 0s
+	//std::vector<unsigned int> ndim = n_pre_move.get_dim();
+	//simple_array_2D n_after_move(ndim[0], ndim[1], 0.0);
+	//// for loop over age
+	//// movement at age %*% n at age
+	//// [narea x narea] %*% n[narea]
+	//auto nages = n_pre_move.get_dim()[0];
+	//auto nareas = n_after_move.get_dim()[1];
+	//for (int age_count = 0; age_count < nages; age_count++){
+	//	for(int i = 0; i < nareas; i++){
+	//		for(int j = 0; j < nareas; j++){
+	//			n_after_move(age_count, i) += movement(i,j,age_count) * n_pre_move(age_count, j);
+	//		}
+	//	}
+	//}
+	return n_after_move;
+}
 
 
 

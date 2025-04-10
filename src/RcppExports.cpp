@@ -168,6 +168,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// movement_test
+simple_array_2D movement_test(simple_array_2D n_pre_move, simple_array_3D movement);
+RcppExport SEXP _tandoori_movement_test(SEXP n_pre_moveSEXP, SEXP movementSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_2D >::type n_pre_move(n_pre_moveSEXP);
+    Rcpp::traits::input_parameter< simple_array_3D >::type movement(movementSEXP);
+    rcpp_result_gen = Rcpp::wrap(movement_test(n_pre_move, movement));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
@@ -182,6 +194,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_simple_array_3D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_3D_get_accessor_test, 4},
     {"_tandoori_simple_array_3D_constructor", (DL_FUNC) &_tandoori_simple_array_3D_constructor, 4},
     {"_tandoori_test_3D_iterator", (DL_FUNC) &_tandoori_test_3D_iterator, 1},
+    {"_tandoori_movement_test", (DL_FUNC) &_tandoori_movement_test, 2},
     {NULL, NULL, 0}
 };
 

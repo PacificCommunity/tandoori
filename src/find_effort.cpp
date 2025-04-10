@@ -13,6 +13,28 @@
 // initial_effort_mult: nunit
 // fishery_area: nunit
 
+
+simple_array_2D get_n_after_movement(simple_array_2D n_pre_move, simple_array_3D movement){
+	// Make a new simple_array_2D that is filled with 0s
+	std::vector<unsigned int> ndim = n_pre_move.get_dim();
+	simple_array_2D n_after_move(ndim[0], ndim[1], 0.0);
+	// for loop over age
+	// movement at age %*% n at age
+	// [narea x narea] %*% n[narea]
+	auto nages = n_pre_move.get_dim()[0];
+	auto nareas = n_after_move.get_dim()[1];
+	for (int age_count = 0; age_count < nages; age_count++){
+		for(int i = 0; i < nareas; i++){
+			for(int j = 0; j < nareas; j++){
+				n_after_move(age_count, i) += movement(i,j,age_count) * n_pre_move(age_count, j);
+			}
+		}
+	}
+	return n_after_move;
+}
+
+
+
 // Given the fishing effort, return the catch wt given all the other information
 std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_area){
   // Chatty mode

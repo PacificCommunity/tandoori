@@ -49,3 +49,7 @@ test_3D_iterator <- function(sa3d) {
     .Call(`_tandoori_test_3D_iterator`, sa3d)
 }
 
+movement_test <- function(n_pre_move, movement) {
+    .Call(`_tandoori_movement_test`, n_pre_move, movement)
+}
+
