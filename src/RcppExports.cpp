@@ -12,20 +12,21 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // find_effort
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
-RcppExport SEXP _tandoori_find_effort(SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
+Rcpp::NumericVector find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
+RcppExport SEXP _tandoori_find_effort(SEXP n_pre_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP movementSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< simple_array_2D >::type n_after_move(n_after_moveSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type n_pre_move(n_pre_moveSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type waa(waaSEXP);
+    Rcpp::traits::input_parameter< simple_array_3D >::type movement(movementSEXP);
     Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
     Rcpp::traits::input_parameter< double >::type effort_mult_initial(effort_mult_initialSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target(targetSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type target_type(target_typeSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_effort(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area));
+    rcpp_result_gen = Rcpp::wrap(find_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -182,7 +183,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
+    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 9},
     {"_tandoori_int_test", (DL_FUNC) &_tandoori_int_test, 1},
     {"_tandoori_simple_array_2D_constructor", (DL_FUNC) &_tandoori_simple_array_2D_constructor, 3},
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},

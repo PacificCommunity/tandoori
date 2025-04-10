@@ -33,8 +33,6 @@ simple_array_2D get_n_after_movement(simple_array_2D n_pre_move, simple_array_3D
 	return n_after_move;
 }
 
-
-
 // Given the fishing effort, return the catch wt given all the other information
 std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_area){
   // Chatty mode
@@ -76,7 +74,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
 
 
 // target_type: 0 = catch, 1 = effort
-Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
+Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
   // Chatty mode
   bool verbose = false;
   if(verbose){Rprintf("\nIn run()\n");}
@@ -84,7 +82,7 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   // Effort multiplier is the independent value. There is one independent value for each effort, i.e. for each fishery
   // Change log effort multiplier, to prevent -ve effort values
   auto nages = selq.get_dim()[0];
-  auto nareas = n_after_move.get_dim()[1];
+  auto nareas = n_pre_move.get_dim()[1];
   auto nfisheries = selq.get_dim()[1];
   if(verbose){Rprintf("Number of fisheries to solve effort for: %i\n", nfisheries);}
   
@@ -114,7 +112,10 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   std::vector<adouble> log_effort_mult_ad(nfisheries, log(effort_mult_initial)); // Want this to be indep. variable
   if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));}
   if(verbose){Rprintf("log_effort_mult_ad: %f\n", Value(log_effort_mult_ad[0]));}
-  
+
+
+  // Get n after movement - not dependent on effort so don't include in tape section
+  simple_array_2D n_after_move = get_n_after_movement(n_pre_move, movement);
   
   // Don't print any Value() things when inside the tape - it bombs!!!
   /* ***************************************************************** */
@@ -122,8 +123,6 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
   if(verbose){Rprintf("\nTurning on tape\n");}
   //CppAD::Independent(effort_mult_ad);
   CppAD::Independent(log_effort_mult_ad);
-  
-  
   
   if(verbose){Rprintf("\nUpdating effort with multipler\n");}
   // new effort = initial effort * mult
@@ -267,9 +266,9 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
 
 // Function exposed to R
 // [[Rcpp::export]]
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
+Rcpp::NumericVector find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
   
-  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area);
+  Rcpp::NumericVector out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area);
   
   return out;
 }
