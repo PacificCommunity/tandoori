@@ -15,6 +15,16 @@ simple_array_3D_base<T>::simple_array_3D_base(){
     dim = std::vector<unsigned int>();
 }
 
+/*! \brief Constructor 
+ *
+ * Creates a 3D array of dim x,y,z filled with whatever
+ */
+template<typename T>
+simple_array_3D_base<T>::simple_array_3D_base(const unsigned int x, const unsigned int y, const unsigned int z, const T fill){
+    data = std::vector<T>(x*y*z, fill);
+	dim = {x,y,z};
+}
+
 /*! \brief Generic SEXP constructor used as intrusive as
  *
  * \param array_sexp an array from R

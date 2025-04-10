@@ -15,6 +15,15 @@ simple_array_2D_base<T>::simple_array_2D_base(){
     dim = std::vector<unsigned int>();
 }
 
+/*! \brief Constructor 
+ *
+ * Creates a 2D array of dim x,y filled with whatever
+ */
+template<typename T>
+simple_array_2D_base<T>::simple_array_2D_base(const unsigned int x, const unsigned int y, const T fill){
+    data = std::vector<T>(x*y, fill);
+	dim = {x,y};
+}
 
 /*! \brief Generic SEXP constructor used as intrusive as
  *

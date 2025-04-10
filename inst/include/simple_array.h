@@ -17,6 +17,7 @@ class simple_array_2D_base {
 	public:
         /* Constructors */
 		simple_array_2D_base();
+		simple_array_2D_base(const unsigned int x, const unsigned int y, const T fill=0.0);
 		simple_array_2D_base(SEXP array_sexp); // Used as intrusive 'as'
         operator SEXP() const; // Used as intrusive 'wrap' - just implemented double version. Could implement adouble if needed.
 		simple_array_2D_base(const simple_array_2D_base& simple_array_2D_base_source); // copy constructor to ensure that copies (i.e. when passing to functions) are deep

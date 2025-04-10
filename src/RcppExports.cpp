@@ -40,6 +40,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simple_array_2D_constructor
+simple_array_2D simple_array_2D_constructor(unsigned int x, unsigned int y, double fill);
+RcppExport SEXP _tandoori_simple_array_2D_constructor(SEXP xSEXP, SEXP ySEXP, SEXP fillSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type fill(fillSEXP);
+    rcpp_result_gen = Rcpp::wrap(simple_array_2D_constructor(x, y, fill));
+    return rcpp_result_gen;
+END_RCPP
+}
 // simple_array_2D_as_wrap_test
 simple_array_2D simple_array_2D_as_wrap_test(simple_array_2D sa2d);
 RcppExport SEXP _tandoori_simple_array_2D_as_wrap_test(SEXP sa2dSEXP) {
@@ -130,6 +143,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simple_array_3D_constructor
+simple_array_3D simple_array_3D_constructor(unsigned int x, unsigned int y, unsigned int z, double fill);
+RcppExport SEXP _tandoori_simple_array_3D_constructor(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP fillSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type z(zSEXP);
+    Rcpp::traits::input_parameter< double >::type fill(fillSEXP);
+    rcpp_result_gen = Rcpp::wrap(simple_array_3D_constructor(x, y, z, fill));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_3D_iterator
 simple_array_3D test_3D_iterator(simple_array_3D sa3d);
 RcppExport SEXP _tandoori_test_3D_iterator(SEXP sa3dSEXP) {
@@ -145,6 +172,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
     {"_tandoori_int_test", (DL_FUNC) &_tandoori_int_test, 1},
+    {"_tandoori_simple_array_2D_constructor", (DL_FUNC) &_tandoori_simple_array_2D_constructor, 3},
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},
     {"_tandoori_simple_array_2D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_2D_get_accessor_test, 3},
     {"_tandoori_get_catch_demo", (DL_FUNC) &_tandoori_get_catch_demo, 4},
@@ -152,6 +180,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_test_catch_weight", (DL_FUNC) &_tandoori_test_catch_weight, 6},
     {"_tandoori_simple_array_3D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_3D_as_wrap_test, 1},
     {"_tandoori_simple_array_3D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_3D_get_accessor_test, 4},
+    {"_tandoori_simple_array_3D_constructor", (DL_FUNC) &_tandoori_simple_array_3D_constructor, 4},
     {"_tandoori_test_3D_iterator", (DL_FUNC) &_tandoori_test_3D_iterator, 1},
     {NULL, NULL, 0}
 };

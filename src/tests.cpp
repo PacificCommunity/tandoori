@@ -12,6 +12,13 @@ int int_test(int dummy){
 	return dummy2;
 }
 
+// Make and initialise a 2D array
+// [[Rcpp::export]]
+simple_array_2D simple_array_2D_constructor(unsigned int x, unsigned int y, double fill){
+    simple_array_2D sa2d(x,y,fill);
+	return sa2d;
+}
+
 // Pass in and return 2D array as <double>
 // [[Rcpp::export]]
 simple_array_2D simple_array_2D_as_wrap_test(simple_array_2D sa2d){
@@ -89,19 +96,25 @@ double simple_array_3D_get_accessor_test(simple_array_3D sa3d, const int x, cons
     return sa3d(x,y,z);
 }
 
+// Make and initialise a 3D array
+// [[Rcpp::export]]
+simple_array_3D simple_array_3D_constructor(unsigned int x, unsigned int y, unsigned int z, double fill){
+    simple_array_3D sa3d(x,y,z,fill);
+	return sa3d;
+}
+
+
 // [[Rcpp::export]]
 simple_array_3D test_3D_iterator(simple_array_3D sa3d){
 	std::fill(sa3d.begin(), sa3d.end(), 0.0);
 	return sa3d;
 }
 
-
 // // [[Rcpp:export]]
 //simple_array_2D movement_test(simple_array_2D n_pre_move, simple_array_3D movement){
 //	// Make a new simple_array_2D that is filled with 0s
 //	simple_array_2D n_after_move = n_pre_move;
-//	
-//
+//	std::fill(n_after_move.begin(), n_after_move.end(), 0.0);
 //}
 
 

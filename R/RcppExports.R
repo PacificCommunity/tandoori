@@ -9,6 +9,10 @@ int_test <- function(dummy) {
     .Call(`_tandoori_int_test`, dummy)
 }
 
+simple_array_2D_constructor <- function(x, y, fill) {
+    .Call(`_tandoori_simple_array_2D_constructor`, x, y, fill)
+}
+
 simple_array_2D_as_wrap_test <- function(sa2d) {
     .Call(`_tandoori_simple_array_2D_as_wrap_test`, sa2d)
 }
@@ -35,6 +39,10 @@ simple_array_3D_as_wrap_test <- function(sa3d) {
 
 simple_array_3D_get_accessor_test <- function(sa3d, x, y, z) {
     .Call(`_tandoori_simple_array_3D_get_accessor_test`, sa3d, x, y, z)
+}
+
+simple_array_3D_constructor <- function(x, y, z, fill) {
+    .Call(`_tandoori_simple_array_3D_constructor`, x, y, z, fill)
 }
 
 test_3D_iterator <- function(sa3d) {
