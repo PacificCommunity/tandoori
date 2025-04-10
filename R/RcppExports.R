@@ -21,6 +21,10 @@ get_catch_demo <- function(f, m, n, fishery_area) {
     .Call(`_tandoori_get_catch_demo`, f, m, n, fishery_area)
 }
 
+test_2D_iterator <- function(sa2d) {
+    .Call(`_tandoori_test_2D_iterator`, sa2d)
+}
+
 test_catch_weight <- function(effort_in, n_after_move, m, waa, selq, fishery_area) {
     .Call(`_tandoori_test_catch_weight`, effort_in, n_after_move, m, waa, selq, fishery_area)
 }
@@ -31,5 +35,9 @@ simple_array_3D_as_wrap_test <- function(sa3d) {
 
 simple_array_3D_get_accessor_test <- function(sa3d, x, y, z) {
     .Call(`_tandoori_simple_array_3D_get_accessor_test`, sa3d, x, y, z)
+}
+
+test_3D_iterator <- function(sa3d) {
+    .Call(`_tandoori_test_3D_iterator`, sa3d)
 }
 

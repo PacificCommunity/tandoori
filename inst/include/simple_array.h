@@ -35,6 +35,14 @@ class simple_array_2D_base {
 		//T& operator () (const unsigned int element); 
 		T& operator () (const unsigned int x, const unsigned int y);
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<T>::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<T>::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     protected:
         std::vector<T> data;
         std::vector<unsigned int> dim;

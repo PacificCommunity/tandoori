@@ -78,6 +78,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_2D_iterator
+simple_array_2D test_2D_iterator(simple_array_2D sa2d);
+RcppExport SEXP _tandoori_test_2D_iterator(SEXP sa2dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_2D >::type sa2d(sa2dSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_2D_iterator(sa2d));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_catch_weight
 Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area);
 RcppExport SEXP _tandoori_test_catch_weight(SEXP effort_inSEXP, SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP fishery_areaSEXP) {
@@ -119,6 +130,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_3D_iterator
+simple_array_3D test_3D_iterator(simple_array_3D sa3d);
+RcppExport SEXP _tandoori_test_3D_iterator(SEXP sa3dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_3D >::type sa3d(sa3dSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_3D_iterator(sa3d));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
@@ -126,9 +148,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},
     {"_tandoori_simple_array_2D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_2D_get_accessor_test, 3},
     {"_tandoori_get_catch_demo", (DL_FUNC) &_tandoori_get_catch_demo, 4},
+    {"_tandoori_test_2D_iterator", (DL_FUNC) &_tandoori_test_2D_iterator, 1},
     {"_tandoori_test_catch_weight", (DL_FUNC) &_tandoori_test_catch_weight, 6},
     {"_tandoori_simple_array_3D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_3D_as_wrap_test, 1},
     {"_tandoori_simple_array_3D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_3D_get_accessor_test, 4},
+    {"_tandoori_test_3D_iterator", (DL_FUNC) &_tandoori_test_3D_iterator, 1},
     {NULL, NULL, 0}
 };
 

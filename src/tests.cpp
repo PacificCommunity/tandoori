@@ -51,6 +51,14 @@ simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_arra
 	return catch_out;
 }
 
+
+// [[Rcpp::export]]
+simple_array_2D test_2D_iterator(simple_array_2D sa2d){
+	std::fill(sa2d.begin(), sa2d.end(), 0.0);
+	return sa2d;
+}
+
+
 // [[Rcpp::export]]
 Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area){
   
@@ -80,6 +88,21 @@ simple_array_3D simple_array_3D_as_wrap_test(simple_array_3D sa3d){
 double simple_array_3D_get_accessor_test(simple_array_3D sa3d, const int x, const int y, const int z){
     return sa3d(x,y,z);
 }
+
+// [[Rcpp::export]]
+simple_array_3D test_3D_iterator(simple_array_3D sa3d){
+	std::fill(sa3d.begin(), sa3d.end(), 0.0);
+	return sa3d;
+}
+
+
+// // [[Rcpp:export]]
+//simple_array_2D movement_test(simple_array_2D n_pre_move, simple_array_3D movement){
+//	// Make a new simple_array_2D that is filled with 0s
+//	simple_array_2D n_after_move = n_pre_move;
+//	
+//
+//}
 
 
 

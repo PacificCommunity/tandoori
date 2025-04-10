@@ -98,6 +98,29 @@ T& simple_array_3D_base<T>::operator () (const unsigned int x, const unsigned in
 	return data[element];
 }
 
+//------------------ begin and end ---------------------------------
+// These are used for for_range and iterators
+
+template <typename T>
+typename simple_array_3D_base<T>::iterator simple_array_3D_base<T>::begin(){
+    return data.begin();
+}
+
+template <typename T>
+typename simple_array_3D_base<T>::iterator simple_array_3D_base<T>::end(){
+    return data.end();
+}
+
+template <typename T>
+typename simple_array_3D_base<T>::const_iterator simple_array_3D_base<T>::begin() const {
+    return data.begin();
+}
+
+template <typename T>
+typename simple_array_3D_base<T>::const_iterator simple_array_3D_base<T>::end() const {
+    return data.end();
+}
+
 /*----------------------------------------------------*/
 /* Explicit instantiations - alternatively put all the definitions into the header file
  * This way we have more control over what types the functions work with
