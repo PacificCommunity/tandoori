@@ -6,6 +6,7 @@
 // Add all the includes here
 
 #include "simple_array.h"
+#include "simple_array_3D.h"
 #include "find_effort.h"
 
 // [[Rcpp::plugins(cpp11)]]

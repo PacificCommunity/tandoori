@@ -243,3 +243,12 @@ Rcpp::NumericVector run(simple_array_2D n_after_move, simple_array_2D m, simple_
 }
 
 
+// Function exposed to R
+// [[Rcpp::export]]
+Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
+  
+  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area);
+  
+  return out;
+}
+

@@ -51,15 +51,6 @@ simple_array_2D get_catch_demo(simple_array_2D f, simple_array_2D m, simple_arra
 	return catch_out;
 }
 
-
-// [[Rcpp::export]]
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
-  
-  Rcpp::NumericVector out = run(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area);
-  
-  return out;
-}
-
 // [[Rcpp::export]]
 Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area){
   
@@ -76,6 +67,18 @@ Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_arra
     
   
   return out;
+}
+
+// Pass in and return 3D array as <double>
+// [[Rcpp::export]]
+simple_array_3D simple_array_3D_as_wrap_test(simple_array_3D sa3d){
+    return sa3d;
+}
+
+// Access element test
+// [[Rcpp::export]]
+double simple_array_3D_get_accessor_test(simple_array_3D sa3d, const int x, const int y, const int z){
+    return sa3d(x,y,z);
 }
 
 

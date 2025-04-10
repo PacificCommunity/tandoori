@@ -11,6 +11,24 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// find_effort
+Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
+RcppExport SEXP _tandoori_find_effort(SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_2D >::type n_after_move(n_after_moveSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type waa(waaSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
+    Rcpp::traits::input_parameter< double >::type effort_mult_initial(effort_mult_initialSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type target_type(target_typeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_effort(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area));
+    return rcpp_result_gen;
+END_RCPP
+}
 // int_test
 int int_test(int dummy);
 RcppExport SEXP _tandoori_int_test(SEXP dummySEXP) {
@@ -60,24 +78,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// find_effort
-Rcpp::NumericVector find_effort(simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
-RcppExport SEXP _tandoori_find_effort(SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< simple_array_2D >::type n_after_move(n_after_moveSEXP);
-    Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
-    Rcpp::traits::input_parameter< simple_array_2D >::type waa(waaSEXP);
-    Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
-    Rcpp::traits::input_parameter< double >::type effort_mult_initial(effort_mult_initialSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type target_type(target_typeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_effort(n_after_move, m, waa, selq, effort_mult_initial, target, target_type, fishery_area));
-    return rcpp_result_gen;
-END_RCPP
-}
 // test_catch_weight
 Rcpp::NumericVector test_catch_weight(Rcpp::NumericVector effort_in, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::IntegerVector fishery_area);
 RcppExport SEXP _tandoori_test_catch_weight(SEXP effort_inSEXP, SEXP n_after_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP selqSEXP, SEXP fishery_areaSEXP) {
@@ -94,14 +94,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simple_array_3D_as_wrap_test
+simple_array_3D simple_array_3D_as_wrap_test(simple_array_3D sa3d);
+RcppExport SEXP _tandoori_simple_array_3D_as_wrap_test(SEXP sa3dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_3D >::type sa3d(sa3dSEXP);
+    rcpp_result_gen = Rcpp::wrap(simple_array_3D_as_wrap_test(sa3d));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simple_array_3D_get_accessor_test
+double simple_array_3D_get_accessor_test(simple_array_3D sa3d, const int x, const int y, const int z);
+RcppExport SEXP _tandoori_simple_array_3D_get_accessor_test(SEXP sa3dSEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_3D >::type sa3d(sa3dSEXP);
+    Rcpp::traits::input_parameter< const int >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const int >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(simple_array_3D_get_accessor_test(sa3d, x, y, z));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
     {"_tandoori_int_test", (DL_FUNC) &_tandoori_int_test, 1},
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},
     {"_tandoori_simple_array_2D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_2D_get_accessor_test, 3},
     {"_tandoori_get_catch_demo", (DL_FUNC) &_tandoori_get_catch_demo, 4},
-    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 8},
     {"_tandoori_test_catch_weight", (DL_FUNC) &_tandoori_test_catch_weight, 6},
+    {"_tandoori_simple_array_3D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_3D_as_wrap_test, 1},
+    {"_tandoori_simple_array_3D_get_accessor_test", (DL_FUNC) &_tandoori_simple_array_3D_get_accessor_test, 4},
     {NULL, NULL, 0}
 };
 
