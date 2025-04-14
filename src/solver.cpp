@@ -65,13 +65,13 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
     
         // Get f(x0). Eval function at current independent value (current effort mult)
         y = fun.Forward(0, indep); 
-        if(verbose){
-          Rprintf("Eval function. y[i]: ");
-          for(int icount=0; icount<nindep; icount++){
-            Rprintf(" %f", y[icount]);
-          }
-          Rprintf("\n");
-        }
+        //if(verbose){
+        //  Rprintf("Eval function. y[i]: ");
+        //  for(int icount=0; icount<nindep; icount++){
+        //    Rprintf(" %f", y[icount]);
+        //  }
+        //  Rprintf("\n");
+        //}
     
         // Did we hit tolerance?
         if (euclid_norm(y) < tolerance){
@@ -114,22 +114,22 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         }
         
         if(verbose){
-          Rprintf("\nLU Solve. delta_indep[i]: ");
-          for(int icount=0; icount<nindep; icount++){
-            Rprintf(" %f", delta_indep[icount]);
-          }
-          Rprintf("\n");
+          //Rprintf("\nLU Solve. delta_indep[i]: ");
+          //for(int icount=0; icount<nindep; icount++){
+          //  Rprintf(" %f", delta_indep[icount]);
+          //}
+          //Rprintf("\n");
         }
         
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
         std::transform(indep.begin(), indep.end(), delta_indep.begin(), indep.begin(),std::minus<double>());
         if(verbose){
-          Rprintf("\nNew indep[i]: ");
-          for(int icount=0; icount<nindep; icount++){
-            Rprintf(" %f", indep[icount]);
-          }
-          Rprintf("\n");
+          //Rprintf("\nNew indep[i]: ");
+          //for(int icount=0; icount<nindep; icount++){
+          //  Rprintf(" %f", indep[icount]);
+          //}
+          //Rprintf("\n");
         }
         
         // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
@@ -139,6 +139,14 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
             if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
             indep[indep_count] = log(10.0);
           }
+          //if (indep[indep_count] >= 10.0){
+          //  if(verbose){Rprintf("Fishery %i hit indep max limit\n", indep_count + 1);}
+          //  indep[indep_count] = 10.0;
+          //}
+          //if (indep[indep_count] <= 1e-9){
+          //  if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
+          //  indep[indep_count] = 1e-9;
+          //}
         }
         
     }
