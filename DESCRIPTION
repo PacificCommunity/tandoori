@@ -9,7 +9,7 @@ Depends:
   R (>= 4.0),
   methods,
   FLCore (>= 2.6.19.9032),
-  ggplotFL
+  FLFishery (>= 0.3.8.9012)
 Imports:
   Rcpp (>= 1.0.13),
   tools,

@@ -71,6 +71,88 @@ get_survivors_and_catch <- function(effort, pop_n, m, movement, sel, catch_q, fi
   return(list(n_out=n_out, catch_out=catch_out))
 }
 
+# New get survivors and catch using FLFisheries and FLBiol
+
+# Keep it simple = E * sel * q
+# Takes forever
+setGeneric("fmort", function(fisheries, year, season, ...) standardGeneric("fmort"))
+setMethod("fmort", signature(fisheries="FLFisheries", year='missing', season='missing'),
+  function(fisheries){
+    # Output is an FLQuant with unit dim of length nfisheries
+    # This is quite dodgy - assumes all FLF objects have same dims
+    dmns <- dimnames(catch.sel(fisheries[[1]][[1]]))
+    dmns$unit <- 1:length(fisheries)
+    fmort <- FLQuant(NA, dimnames=dmns)
+    for (fi in 1:length(fisheries)){
+      # Assume one catch per fishery at the moment - single stock
+      fmort[,,fi,] <- sweep(catch.sel(fisheries[[fi]][[1]]), c(2:6), catch.q(fisheries[[fi]][[1]]) * effort(fisheries[[fi]]), "*")
+    }
+    return(fmort)
+})
+
+setMethod("fmort", signature(fisheries="FLFisheries", year='numeric', season='numeric'),
+  function(fisheries, year, season){
+    # Output is an FLQuant with unit dim of length nfisheries
+    # This is quite dodgy - assumes all FLF objects have same dims
+    dmns <- dimnames(catch.sel(fisheries[[1]][[1]])[, ac(year),,season])
+    dmns$unit <- 1:length(fisheries)
+    fmort <- FLQuant(NA, dimnames=dmns)
+    for (fi in 1:length(fisheries)){
+      # Assume one catch per fishery at the moment - single stock
+      fmort[,,fi,] <- sweep(catch.sel(fisheries[[fi]][[1]])[, ac(year),,season], c(2:6), catch.q(fisheries[[fi]][[1]])[, ac(year),,season] * effort(fisheries[[fi]])[, ac(year),,season], "*")
+    }
+    return(fmort)
+})
+
+
+setGeneric("get_survivors_and_catch", function(fisheries, biol, ...) standardGeneric("get_survivors_and_catch"))
+
+setMethod("get_survivors_and_catch", signature(fisheries="FLFisheries", biol="FLBiol"),
+  function(fisheries, biol, movement, year, season){
+    
+    # fmort of each fishery in each area
+    fm <- fmort(fisheries, year, season)
+    #fmort_fishery <- areaSums(fm) # Do we need this?
+    fmort_area <- unitSums(fm)
+    z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
+    # For individual fisheries what is F from that fishery as proportion of total Z on stock?
+    fprop_fishery <- sweep(fm, c(1,2,4,5,6), z_area, "/")
+  
+  
+    nages <- dim(n(biol))[1]
+    # Temp objects holder 
+    catch_out <- fm
+    catch_out[] <- NA
+    n_out <- n(biol)[, as.character(year+1),,season]
+    n_out[] <- NA
+    #n_after_move <- n(biol)[, as.character(year),,season]
+    n_after_move[] <- n_out
+  
+    # N and catch by age
+    # General rule: movement then death, so death applied to moved population
+    for (age_count in 1:nages){
+      # Movement happens
+      n_after_move[age_count] <- movement[,, age_count, season] %*% n(biol)[age_count, ac(year),, season]
+      # Survivors
+      n_out[age_count] <- n_after_move[age_count] * exp(-z_area[age_count,])
+      # Apply death to moved population and get catch
+      prop_dead <- sweep(fprop_fishery[age_count,], c(1,2,4,5,6), (1-exp(-z_area[age_count,])), "*")
+      catch_out[age_count, ] <- sweep(prop_dead, c(1,2,4,5,6), n_after_move[age_count], "*")
+    }
+  
+    # Sort out plusgroup
+    # move everyone down an age, insert NA at top, and sum last two ages
+    n_out[(nages-1),] <- n_out[nages,] + n_out[nages-1,]
+    n_out[2:nages,] <- n_out[1:(nages-1),]
+    # Recruitment handled separately
+    n_out[1,] <- NA
+    
+    # Put the outputs into the objects? Or just return them
+    return(list(n_out=n_out, catch_out=catch_out))
+  })
+
+
+
 #data("yft_projection_bits")
 ## Demo
 ## Model info

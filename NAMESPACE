@@ -1,5 +1,6 @@
 import(methods)
 import(FLCore)
+import(FLFishery)
 useDynLib(tandoori, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
