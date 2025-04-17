@@ -14,7 +14,7 @@
 #' @param srr_devs Deviates in year y
 #' @param rec_dist Proportion of total annual recruitment in each season and region
 
-get_recruitment <- function(pop_n, waa, mat, srr_params, srr_devs, rec_dist){
+get_recruitment_orig <- function(pop_n, waa, mat, srr_params, srr_devs, rec_dist){
   # Get total annual average SSB in year y
   ssb_total <- seasonMeans(areaSums(quantSums(pop_n * waa * mat))) /1000
   # Get total rec in year y+1
@@ -26,6 +26,37 @@ get_recruitment <- function(pop_n, waa, mat, srr_params, srr_devs, rec_dist){
   new_rec <- sweep(rec_dist, c(1,2,3,6), total_rec_with_dev, "*")
   return(new_rec)
 }
+
+#' @rdname get_annual_recruitment
+#' @description
+#' Calculates recruitment in all seasons and areas of a year.
+#' Based on the MFCL method of getting total SSB in year-1, calculating total recruitment in year,
+#' applying a deviate, then splitting the resulting total annual recruitment across the seasons and areas in year.
+#' @param year The year recruitment is to be calculated for.
+#' @param srr_devs An FLQuant of total annual recruitment deviates.
+#' @aliases get_annual_recruitment get_annual_recruitment-method
+#' @examples
+#' \dontrun{
+#' data(bet_projection_low_catch_bits_simple)
+#' annual_rec <- get_annual_recruitment(bet, year=ycount, srr_devs=srr_devs)
+#' }
+setGeneric("get_annual_recruitment", function(object, ...) standardGeneric("get_annual_recruitment"))
+
+setMethod("get_annual_recruitment", signature(object="simpleBiol"),
+  function(object, year, srr_devs){
+    # Check dims of srr_devs 
+    # Maybe types too - add to dispatch
+    # Get ssb in previous year
+    # Marginally faster to go by hand, rather than calling ssb() then subsetting year
+    ssb_total <- seasonMeans(areaSums(quantSums(n(object)[,ac(year-1)] * mat(object)[,ac(year-1)] * wt(object)[,ac(year-1)]))) / 1000
+    total_rec <- (ssb_total * srr_params(object)["a"]) / (ssb_total +  srr_params(object)["b"]) * exp(srr_params(object)["sigma"]/2)
+    total_rec_with_dev <- total_rec - srr_devs[, ac(year)]
+  # Spread over areas and seasons - based on what...
+    new_rec <- sweep(rec_dist(bet), c(1,2,3,6), total_rec_with_dev, "*")
+    return(new_rec)
+  }
+)
+
 
 
 # data(yft_projection_bits)

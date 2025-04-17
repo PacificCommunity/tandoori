@@ -22,7 +22,7 @@
 #' @param fishery_area Vector of which model region each fishery operates in 
 #' @return A list of survivors and catch numbers at age
 #' @export
-get_survivors_and_catch <- function(effort, pop_n, m, movement, sel, catch_q, fishery_area){
+get_survivors_and_catch_orig <- function(effort, pop_n, m, movement, sel, catch_q, fishery_area){
  
   nareas <- dim(pop_n)[5]
   # Get f by fishery
@@ -70,6 +70,68 @@ get_survivors_and_catch <- function(effort, pop_n, m, movement, sel, catch_q, fi
   
   return(list(n_out=n_out, catch_out=catch_out))
 }
+
+setGeneric("fmort", function(object, year, season, ...) standardGeneric("fmort"))
+setMethod("fmort", signature(object="simpleFisheries", year='missing', season='missing'),
+  function(object){
+    # Just sel * q * effort
+    fmort <- sweep(sel(object), c(2:6), catch_q(object) * effort(object), "*")
+    return(fmort)
+})
+
+setMethod("fmort", signature(object="simpleFisheries", year='numeric', season='numeric'),
+  function(object, year, season){
+    # Just sel * q * effort
+    fmort <- sweep(sel(object)[, ac(year),,season], c(2:6), catch_q(object)[, ac(year),,season] * effort(object)[, ac(year),,season], "*")
+    return(fmort)
+})
+
+setGeneric("get_survivors_and_catch", function(fisheries, biol, ...) standardGeneric("get_survivors_and_catch"))
+
+setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol="simpleBiol"),
+  function(fisheries, biol, year, season){
+    
+    # fmort of each fishery in each area
+    fm <- fmort(fisheries, year, season)
+    #fmort_fishery <- areaSums(fm) # Do we need this?
+    fmort_area <- unitSums(fm)
+    z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
+    # For individual fisheries what is F from that fishery as proportion of total Z on stock?
+    fprop_fishery <- sweep(fm, c(1,2,4,5,6), z_area, "/")
+  
+    nages <- dim(n(biol))[1]
+    # Temp objects holder 
+    catch_out <- fm
+    catch_out[] <- NA
+    n_out <- n(biol)[, as.character(year),,season]
+    n_out[] <- NA
+    n_after_move <- n_out
+  
+    # N and catch by age
+    # General rule: movement then death, so death applied to moved population
+    for (age_count in 1:nages){
+      # Movement happens
+      n_after_move[age_count] <- movement(biol)[,, age_count, season] %*% n(biol)[age_count, ac(year),, season]
+      # Survivors
+      n_out[age_count] <- n_after_move[age_count] * exp(-z_area[age_count,])
+      # Apply death to moved population and get catch
+      prop_dead <- sweep(fprop_fishery[age_count,], c(1,2,4,5,6), (1-exp(-z_area[age_count,])), "*")
+      catch_out[age_count, ] <- sweep(prop_dead, c(1,2,4,5,6), n_after_move[age_count], "*")
+    }
+  
+    # Sort out plusgroup
+    # move everyone down an age, insert NA at top, and sum last two ages
+    n_out[(nages-1),] <- n_out[nages,] + n_out[nages-1,]
+    n_out[2:nages,] <- n_out[1:(nages-1),]
+    # Recruitment handled separately
+    n_out[1,] <- NA
+    
+    # Put the outputs into the objects? Or just return them
+    return(list(n_out=n_out, catch_out=catch_out))
+  })
+
+
+
 
 #data("yft_projection_bits")
 ## Demo

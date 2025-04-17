@@ -1,0 +1,89 @@
+#  
+#  Copyright 2025 Finlay Scott. Distributed under the GPL 2 or later
+#  Maintainer: Finlay Scott
+#
+
+# simpleBiol
+#' @rdname simpleBiol
+#' @aliases simpleBiol simpleBiol-methods
+setGeneric('simpleBiol', function(object, ...) standardGeneric('simpleBiol'))
+
+
+#' @rdname simpleBiol
+#' @aliases simpleBiol,missing-method simpleBiol,FLQuant-method simpleBiolcpp-class
+setMethod('simpleBiol', signature(object='FLQuant'),
+          function(object, ...) {
+            args <- list(...)
+            # empty object
+            object[] <- NA
+            units(object) <- "NA"
+            res <- new("simpleBiol", n=object, m=object, wt=object, mat=object)
+            # Load given slots
+            for(i in names(args)){
+              slot(res, i) <- args[[i]]
+            }
+            return(res)
+          }
+)
+
+setMethod('simpleBiol', signature(object='missing'),
+          function(...) {
+            args <- list(...)
+            slots <- unlist(lapply(args, function(x) is(x, 'FLQuant')))
+            slots <- names(slots[slots])
+            # if no FLQuant argument given, then use empty FLQuant
+            if(length(slots) == 0){
+              object <- FLQuant()
+            }
+            # if at least 1, use first one
+            else if(length(slots) == 1) {
+              object <- args[[slots[1]]]
+            }
+            return(simpleBiol(object, ...))
+          }
+) 
+
+
+# simpleFisheries
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleFisheries-methods
+setGeneric('simpleFisheries', function(object, ...) standardGeneric('simpleFisheries'))
+
+
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries,missing-method simpleFisheries,FLQuant-method simpleFisheriescpp-class
+setMethod('simpleFisheries', signature(object='FLQuant'),
+          function(object, ...) {
+            args <- list(...)
+            # empty object
+            object[] <- NA
+            units(object) <- "NA"
+            res <- new("simpleFisheries", catch_n=object, catch_wt=object, sel=object, catch_q=object[1,], effort=object[1,])
+            # Load given slots
+            for(i in names(args)){
+              slot(res, i) <- args[[i]]
+            }
+            return(res)
+          }
+)
+
+setMethod('simpleFisheries', signature(object='missing'),
+          function(...) {
+            args <- list(...)
+            slots <- unlist(lapply(args, function(x) is(x, 'FLQuant')))
+            slots <- names(slots[slots])
+            # if no FLQuant argument given, then use empty FLQuant
+            if(length(slots) == 0){
+              object <- FLQuant()
+            }
+            # if at least 1, use first one
+            else if(length(slots) == 1) {
+              object <- args[[slots[1]]]
+            }
+            return(simpleFisheries(object, ...))
+          }
+) 
+
+
+
+

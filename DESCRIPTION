@@ -8,8 +8,7 @@ Description: Tools for projecting tuna operating models. Uses a combination of R
 Depends:
   R (>= 4.0),
   methods,
-  FLCore (>= 2.6.19.9032),
-  ggplotFL
+  FLCore (>= 2.6.19.9032)
 Imports:
   Rcpp (>= 1.0.13),
   tools,
@@ -22,6 +21,9 @@ License: GPL (>= 2)
 LazyLoad: Yes
 LazyData: No
 Collate:
+  simple_classes.R
+  constructors.R
+  accessors.R
   get_recruitment.R
   get_survivors_and_catch.R
   RcppExports.R
