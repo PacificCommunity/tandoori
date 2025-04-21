@@ -309,6 +309,14 @@ setReplaceMethod("catch_wt", signature(object="simpleFisheries", value="numeric"
 
 # sel
 #' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleFisheries-methods
+setGeneric('sel', function(object, ...) standardGeneric('sel'))
+
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleFisheries-methods
+setGeneric('sel<-', function(object, value, ...) standardGeneric('sel<-'))
+
+#' @rdname simpleFisheries
 #' @aliases sel,simpleFisheries-method
 setMethod("sel", signature(object="simpleFisheries"),
           function(object) {

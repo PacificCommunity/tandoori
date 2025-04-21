@@ -93,7 +93,6 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
     
     # fmort of each fishery in each area
     fm <- fmort(fisheries, year, season)
-    #fmort_fishery <- areaSums(fm) # Do we need this?
     fmort_area <- unitSums(fm)
     z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
     # For individual fisheries what is F from that fishery as proportion of total Z on stock?
