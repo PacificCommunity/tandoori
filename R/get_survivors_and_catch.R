@@ -100,23 +100,21 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
   
     nages <- dim(n(biol))[1]
     # Temp objects holder 
-    catch_out <- fm
-    catch_out[] <- NA
-    n_out <- n(biol)[, as.character(year),,season]
-    n_out[] <- NA
-    n_after_move <- n_out
-  
+    n_after_move <- n(biol)[, as.character(year),,season]
+    n_after_move[] <- NA
+    
     # N and catch by age
     # General rule: movement then death, so death applied to moved population
     for (age_count in 1:nages){
       # Movement happens
       n_after_move[age_count] <- movement(biol)[,, age_count, season] %*% n(biol)[age_count, ac(year),, season]
-      # Survivors
-      n_out[age_count] <- n_after_move[age_count] * exp(-z_area[age_count,])
-      # Apply death to moved population and get catch
-      prop_dead <- sweep(fprop_fishery[age_count,], c(1,2,4,5,6), (1-exp(-z_area[age_count,])), "*")
-      catch_out[age_count, ] <- sweep(prop_dead, c(1,2,4,5,6), n_after_move[age_count], "*")
     }
+    
+    # Survivors
+    n_out <- n_after_move * exp(-z_area)
+    # Apply death to moved population and get catch
+    prop_dead <- sweep(fprop_fishery, c(1,2,4,5,6), (1-exp(-z_area)), "*")
+    catch_out <- sweep(prop_dead, c(1,2,4,5,6), n_after_move, "*")
   
     # Sort out plusgroup
     # move everyone down an age, insert NA at top, and sum last two ages
