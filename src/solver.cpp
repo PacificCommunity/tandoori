@@ -113,24 +113,24 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           Rcpp::stop("In solver. LUSolve returned logdet == 0.\nThis potentially means that the system is computationally singular.\i.e. there are an infinite number of solutions to the linear system Jac * x = y.\nAnd this means that any value of effort mult will hit your target.\nAnd this probably means that your selq is 0 for all ages for at least one fishery.\n");
         }
         
-        if(verbose){
+        //if(verbose){
           //Rprintf("\nLU Solve. delta_indep[i]: ");
           //for(int icount=0; icount<nindep; icount++){
           //  Rprintf(" %f", delta_indep[icount]);
           //}
           //Rprintf("\n");
-        }
+        //}
         
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
         std::transform(indep.begin(), indep.end(), delta_indep.begin(), indep.begin(),std::minus<double>());
-        if(verbose){
-          //Rprintf("\nNew indep[i]: ");
-          //for(int icount=0; icount<nindep; icount++){
-          //  Rprintf(" %f", indep[icount]);
-          //}
-          //Rprintf("\n");
-        }
+        //if(verbose){
+        //  Rprintf("\nNew indep[i]: ");
+        //  for(int icount=0; icount<nindep; icount++){
+        //    Rprintf(" %f", indep[icount]);
+        //  }
+        //  Rprintf("\n");
+        //}
         
         // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
         // while it trundles around.
@@ -143,9 +143,10 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           //  if(verbose){Rprintf("Fishery %i hit indep max limit\n", indep_count + 1);}
           //  indep[indep_count] = 10.0;
           //}
-          //if (indep[indep_count] <= 1e-9){
+          // Just eats up all iters as trying to get to 0
+          //if (indep[indep_count] <= log(1e-9)){
           //  if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
-          //  indep[indep_count] = 1e-9;
+          //  indep[indep_count] = log(1e-9);
           //}
         }
         
