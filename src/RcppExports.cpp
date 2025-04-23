@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // find_effort
-Rcpp::NumericVector find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
+Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
 RcppExport SEXP _tandoori_find_effort(SEXP n_pre_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP movementSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

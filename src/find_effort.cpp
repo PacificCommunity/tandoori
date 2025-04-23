@@ -74,7 +74,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
 
 
 // target_type: 0 = catch, 1 = effort
-Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
+Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
   // Chatty mode
   bool verbose = false;
   if(verbose){Rprintf("\nIn run()\n");}
@@ -103,7 +103,11 @@ Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
     if(verbose){Rprintf("All effort targets. Loading return effort with target and returning.\n");}
     // Load output effort with target and exit
     effort = target;
-    return effort;
+    return Rcpp::List::create(
+      Rcpp::Named("effort", effort),
+      Rcpp::Named("solver_code", 1000));
+    
+    
   }
   
   // Make an adouble vector version of the initial mult so every fishery has an initial effort mult
@@ -171,6 +175,8 @@ Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   //CppAD::ADFun<double> fun(effort_mult_ad, error);
   CppAD::ADFun<double> fun(log_effort_mult_ad, error);
   
+  // ------------------------------------------------
+  
   for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
     if(target_type[fishery_count] == 0){
       if(verbose){Rprintf("fishery: %i Catch target. target: %f  catch_hat: %f error: %f\n", fishery_count, target[fishery_count], Value(total_catch_weight_ad[fishery_count]), Value(error[fishery_count]));}
@@ -233,7 +239,7 @@ Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   //  // Update log effort mult with new log effort
   //  std::transform(log_effort_mult_temp.begin(), log_effort_mult_temp.end(), delta_indep.begin(), log_effort_mult_temp.begin(),std::minus<double>());
   //  Rprintf("\nNew indep[i]: ");
-  //  for(int icount=0; icount<nfisheries; icount++){
+  //  for(int i (default position, if it hasn't stopped for any other reason then it's because the iterations have maxed out)count=0; icount<nfisheries; icount++){
   //    Rprintf(" %f", log_effort_mult_temp[icount]);
   //  }
   //  Rprintf("\n");
@@ -251,7 +257,6 @@ Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   std::vector<double> log_effort_mult(nfisheries, log(effort_mult_initial));
   if(verbose){Rprintf("Calling solver\n");}
   int solver_code = 0;
-  //solver_code = newton_raphson(effort_mult, fun, 50, 1e-9);
   solver_code = newton_raphson(log_effort_mult, fun, 50, 1e-9);
   if(verbose){Rprintf("Done solving\n");}
   if(verbose){Rprintf("solver_code: %i\n", solver_code);}
@@ -261,15 +266,20 @@ Rcpp::NumericVector run(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x) {return exp(x);});
   std::transform(effort.begin(), effort.end(), effort_mult.begin(), effort.begin(), std::multiplies<double>());
   
-  return effort;
+  return Rcpp::List::create(
+    Rcpp::Named("effort", effort),
+    Rcpp::Named("solver_code", solver_code));
+  
+  
+  //return effort;
 }
 
 
 // Function exposed to R
 // [[Rcpp::export]]
-Rcpp::NumericVector find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
+Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
   
-  Rcpp::NumericVector out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area);
+  Rcpp::List out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area);
   
   return out;
 }

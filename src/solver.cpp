@@ -53,25 +53,24 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
     std::vector<double> jac(nindep * nindep);
     // Reasons for stopping
     //  1 - Solved within tolerance
-    // -1 - Iteration limit reached (default position, if it hasn't stopped for any other reason then it's because the iterations have maxed out)
-    // -2 - Min limit reached
-    // -3 - Max limit reached
+    // -1 - Iteration limit reached
     int success_code = -1; 
     unsigned int nr_count = 0;
     // Keep looping until target has been solved, or number of iterations has been hit
     while(nr_count < max_iters){ 
+    //while(nr_count < 20){ 
         ++nr_count;
-        if(verbose){Rprintf("Iter count: %i\n", nr_count);}
+        if(verbose){Rprintf("\nIter count: %i\n", nr_count);}
     
         // Get f(x0). Eval function at current independent value (current effort mult)
         y = fun.Forward(0, indep); 
-        //if(verbose){
-        //  Rprintf("Eval function. y[i]: ");
-        //  for(int icount=0; icount<nindep; icount++){
-        //    Rprintf(" %f", y[icount]);
-        //  }
-        //  Rprintf("\n");
-        //}
+        if(verbose){
+          Rprintf("Eval function. y[i]: ");
+          for(int icount=0; icount<nindep; icount++){
+            Rprintf(" %f", y[icount]);
+          }
+          Rprintf("\n");
+        }
     
         // Did we hit tolerance?
         if (euclid_norm(y) < tolerance){
@@ -99,7 +98,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           Rprintf("logdet: %f\n", logdet);
         }
         // This error message is not quite right.
-        // If all errror projection, then jacobian is a diagonal matrix which also sets logdet to 0.
+        // If all effort projection, then jacobian is a diagonal matrix which also sets logdet to 0.
         // However, this is not a problem, and the sovled system is OK.
         // The problem is when the target for a fishery is 0, and selq is 0, meaning that any effort mult is a solution.
         // This results in an infinite number of solutions and a problem.
@@ -113,30 +112,30 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           Rcpp::stop("In solver. LUSolve returned logdet == 0.\nThis potentially means that the system is computationally singular.\i.e. there are an infinite number of solutions to the linear system Jac * x = y.\nAnd this means that any value of effort mult will hit your target.\nAnd this probably means that your selq is 0 for all ages for at least one fishery.\n");
         }
         
-        //if(verbose){
-          //Rprintf("\nLU Solve. delta_indep[i]: ");
-          //for(int icount=0; icount<nindep; icount++){
-          //  Rprintf(" %f", delta_indep[icount]);
-          //}
-          //Rprintf("\n");
-        //}
+        if(verbose){
+          Rprintf("\nLU Solve. delta_indep[i]: ");
+          for(int icount=0; icount<nindep; icount++){
+            Rprintf(" %f", delta_indep[icount]);
+          }
+          Rprintf("\n");
+        }
         
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
         std::transform(indep.begin(), indep.end(), delta_indep.begin(), indep.begin(),std::minus<double>());
-        //if(verbose){
-        //  Rprintf("\nNew indep[i]: ");
-        //  for(int icount=0; icount<nindep; icount++){
-        //    Rprintf(" %f", indep[icount]);
-        //  }
-        //  Rprintf("\n");
-        //}
+        if(verbose){
+          Rprintf("\nNew indep[i]: ");
+          for(int icount=0; icount<nindep; icount++){
+            Rprintf(" %f", indep[icount]);
+          }
+          Rprintf("\n");
+        }
         
         // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
         // while it trundles around.
         for (int indep_count = 0; indep_count < nindep; indep_count ++){
           if (indep[indep_count] >= log(10.0)){
-            if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
+            //if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
             indep[indep_count] = log(10.0);
           }
           //if (indep[indep_count] >= 10.0){
@@ -144,10 +143,10 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           //  indep[indep_count] = 10.0;
           //}
           // Just eats up all iters as trying to get to 0
-          //if (indep[indep_count] <= log(1e-9)){
-          //  if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
-          //  indep[indep_count] = log(1e-9);
-          //}
+          if (indep[indep_count] <= log(1e-12)){
+            //if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
+            indep[indep_count] = log(1e-12);
+          }
         }
         
     }
