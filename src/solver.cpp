@@ -134,10 +134,11 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
         // while it trundles around.
         for (int indep_count = 0; indep_count < nindep; indep_count ++){
-          if (indep[indep_count] >= log(10.0)){
-            //if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
-            indep[indep_count] = log(10.0);
-          }
+          // Too restrictive with 'real' effort and a start effort of 1
+          //if (indep[indep_count] >= log(10.0)){
+          //  //if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
+          //  indep[indep_count] = log(10.0);
+          //}
           //if (indep[indep_count] >= 10.0){
           //  if(verbose){Rprintf("Fishery %i hit indep max limit\n", indep_count + 1);}
           //  indep[indep_count] = 10.0;
