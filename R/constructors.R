@@ -17,7 +17,7 @@ setMethod('simpleBiol', signature(object='FLQuant'),
             # empty object
             object[] <- NA
             units(object) <- "NA"
-            res <- new("simpleBiol", n=object, m=object, wt=object, mat=object)
+            res <- new("simpleBiol", n=object, n0=object, m=object, wt=object, mat=object)
             # Load given slots
             for(i in names(args)){
               slot(res, i) <- args[[i]]

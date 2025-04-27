@@ -27,6 +27,39 @@ setReplaceMethod("n", signature(object="simpleBiol", value="numeric"),
                    return(object)
                  }
 )
+# n0
+#' @rdname simpleBiol
+#' @aliases simpleBiol simpleBiol-methods
+setGeneric('n0', function(object, ...) standardGeneric('n0'))
+
+#' @rdname simpleBiol
+#' @aliases simpleBiol simpleBiol-methods
+setGeneric('n0<-', function(object, value, ...) standardGeneric('n0<-'))
+
+#' @rdname simpleBiol
+#' @aliases n0,simpleBiol-method
+setMethod("n0", signature(object="simpleBiol"),
+          function(object) {
+            return(slot(object, "n0"))
+          }
+)
+
+setReplaceMethod("n0", signature(object="simpleBiol", value="FLQuant"),
+                 function(object, value) {
+                   slot(object, "n0") <- value
+                   return(object)
+                 }
+)
+
+#' @rdname simpleBiol
+#' @aliases n0<-,simpleBiol,numeric-method
+setReplaceMethod("n0", signature(object="simpleBiol", value="numeric"),
+                 function(object, value) {
+                   slot(object, "n0")[] <- value
+                   return(object)
+                 }
+)
+
 
 # m
 #' @rdname simpleBiol

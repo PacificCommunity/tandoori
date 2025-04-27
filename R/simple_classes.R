@@ -15,6 +15,7 @@
 #' @docType class
 #' @section Slots: \describe{
 #'   \item{n}{Numbers in the population. \code{FLQuant}.}
+#'   \item{n0}{Numbers in the population with no fishing. \code{FLQuant}.}
 #'   \item{m}{Mortality rate of the population. \code{FLQuant}.}
 #'   \item{wt}{Mean weight of an individual. \code{FLQuant}.}
 #'   \item{mat}{Proportion of individuals mature. \code{FLQuant}.}
@@ -36,6 +37,7 @@
 setClass("simpleBiol",
          representation(
            n        ="FLQuant",
+           n0        ="FLQuant",
            m        ="FLQuant",
            wt       ="FLQuant",
            mat      ="FLQuant",
@@ -47,6 +49,7 @@ setClass("simpleBiol",
            ),
          prototype=prototype(
            n        = FLQuant(),
+           n0        = FLQuant(),
            m        = FLQuant(),
            wt       = FLQuant(),
            mat      = FLQuant(),
