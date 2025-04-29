@@ -60,6 +60,8 @@ setClass("simpleBiol",
            desc = ""),
          validity = function(object) {
            # To do
+           # Dim of movement should be 5
+           # Set up empty movement: nareas x nareas x nages x nseasons x niters
            return(TRUE)
          }
 )

@@ -17,7 +17,14 @@ setMethod('simpleBiol', signature(object='FLQuant'),
             # empty object
             object[] <- NA
             units(object) <- "NA"
-            res <- new("simpleBiol", n=object, n0=object, m=object, wt=object, mat=object)
+            # Set up empty movement: nareas x nareas x nages x nseasons x niters
+            dims <- dim(object)
+            nareas <- dims[5]
+            nages <- dims[1]
+            nseasons <- dims[4]
+            niters <- dims[6]
+            movement <- array(NA, dim=c(nareas, nareas, nages, nseasons, niters))
+            res <- new("simpleBiol", n=object, n0=object, m=object, wt=object, mat=object, movement=movement)
             # Load given slots
             for(i in names(args)){
               slot(res, i) <- args[[i]]
