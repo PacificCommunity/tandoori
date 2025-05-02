@@ -34,6 +34,7 @@ get_recruitment_orig <- function(pop_n, waa, mat, srr_params, srr_devs, rec_dist
 #' applying a deviate, then splitting the resulting total annual recruitment across the seasons and areas in year.
 #' @param year The year recruitment is to be calculated for.
 #' @param srr_devs An FLQuant of total annual recruitment deviates.
+#' @param zero_effort If TRUE, use n0 slot to recruitment with no fishing.
 #' @aliases get_annual_recruitment get_annual_recruitment-method
 #' @examples
 #' \dontrun{
@@ -43,12 +44,16 @@ get_recruitment_orig <- function(pop_n, waa, mat, srr_params, srr_devs, rec_dist
 setGeneric("get_annual_recruitment", function(object, ...) standardGeneric("get_annual_recruitment"))
 
 setMethod("get_annual_recruitment", signature(object="simpleBiol"),
-  function(object, year, srr_devs){
+  function(object, year, srr_devs, zero_effort=FALSE){
     # Check dims of srr_devs 
     # Maybe types too - add to dispatch
     # Get ssb in previous year
     # Marginally faster to go by hand, rather than calling ssb() then subsetting year
-    ssb_total <- seasonMeans(areaSums(quantSums(n(object)[,ac(year-1)] * mat(object)[,ac(year-1)] * wt(object)[,ac(year-1)]))) / 1000
+    if(!zero_effort){
+      ssb_total <- seasonMeans(areaSums(quantSums(n(object)[,ac(year-1)] * mat(object)[,ac(year-1)] * wt(object)[,ac(year-1)]))) / 1000
+    } else {
+      ssb_total <- seasonMeans(areaSums(quantSums(n0(object)[,ac(year-1)] * mat(object)[,ac(year-1)] * wt(object)[,ac(year-1)]))) / 1000
+    }
     total_rec <- (ssb_total * srr_params(object)["a"]) / (ssb_total +  srr_params(object)["b"]) * exp(srr_params(object)["sigma"]/2)
     total_rec_with_dev <- total_rec - srr_devs[, ac(year)]
   # Spread over areas and seasons - based on what...

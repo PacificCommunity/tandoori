@@ -89,10 +89,15 @@ setMethod("fmort", signature(object="simpleFisheries", year='numeric', season='n
 setGeneric("get_survivors_and_catch", function(fisheries, biol, ...) standardGeneric("get_survivors_and_catch"))
 
 setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol="simpleBiol"),
-  function(fisheries, biol, year, season){
-    
+  function(fisheries, biol, year, season, zero_effort = FALSE){
     # fmort of each fishery in each area
-    fm <- fmort(fisheries, year, season)
+    if(!zero_effort){
+      fm <- fmort(fisheries, year, season)
+    } else {
+      fm <- sel(fisheries)[, ac(year),,ac(season)]
+      fm[] <- 0
+    }
+    
     fmort_area <- unitSums(fm)
     z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
     # For individual fisheries what is F from that fishery as proportion of total Z on stock?
@@ -107,7 +112,12 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
     # General rule: movement then death, so death applied to moved population
     for (age_count in 1:nages){
       # Movement happens
-      n_after_move[age_count] <- movement(biol)[,, age_count, season] %*% n(biol)[age_count, ac(year),, season]
+      # iter!!! movement
+      if(!zero_effort){
+        n_after_move[age_count] <- movement(biol)[,, age_count, season,1] %*% n(biol)[age_count, ac(year),, season]
+      } else {
+        n_after_move[age_count] <- movement(biol)[,, age_count, season,1] %*% n0(biol)[age_count, ac(year),, season]
+      }
     }
     
     # Survivors
