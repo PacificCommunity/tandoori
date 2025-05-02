@@ -161,10 +161,8 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
     // Changed error to be log(target) - log(target_hat) - requires fewer solver iterations - 22/04/2025
     if(target_type[fishery_count] == 0){
       error[fishery_count] = log(target[fishery_count]) - log(total_catch_weight_ad[fishery_count]);
-      // Forgot - you can't print things out when being taped
     } else if(target_type[fishery_count] == 1){
       error[fishery_count] = log(target[fishery_count]) - log(effort_ad[fishery_count]);
-      //Rprintf("fishery: %i Effort target. target: %f  effort_ad: %f error: %f\n", fishery_count, target[fishery_count], Value(effort_ad[fishery_count]), Value(error[fishery_count]));
     } else {
       Rcpp::stop("Unrecognised target type for fishery %i.", fishery_count);
     }
@@ -176,14 +174,15 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   CppAD::ADFun<double> fun(log_effort_mult_ad, error);
   
   // ------------------------------------------------
-  
-  for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
-    if(target_type[fishery_count] == 0){
-      if(verbose){Rprintf("fishery: %i Catch target. target: %f  catch_hat: %f error: %f\n", fishery_count, target[fishery_count], Value(total_catch_weight_ad[fishery_count]), Value(error[fishery_count]));}
-    } else if(target_type[fishery_count] == 1){
-      if(verbose){Rprintf("fishery: %i Effort target. target: %f  effort_ad: %f error: %f\n", fishery_count, target[fishery_count], Value(effort_ad[fishery_count]), Value(error[fishery_count]));}
-    } else {
-      Rcpp::stop("Unrecognised target type for fishery %i.", fishery_count);
+  if(verbose){ 
+    for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
+      if(target_type[fishery_count] == 0){
+        Rprintf("fishery: %i Catch target. target: %f  catch_hat: %f error: %f\n", fishery_count, target[fishery_count], Value(total_catch_weight_ad[fishery_count]), Value(error[fishery_count]));
+      } else if(target_type[fishery_count] == 1){
+        Rprintf("fishery: %i Effort target. target: %f  effort_ad: %f error: %f\n", fishery_count, target[fishery_count], Value(effort_ad[fishery_count]), Value(error[fishery_count]));
+      } else {
+        Rcpp::stop("Unrecognised target type for fishery %i.", fishery_count);
+      }
     }
   }
   

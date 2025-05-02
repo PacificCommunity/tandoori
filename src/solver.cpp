@@ -134,19 +134,22 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
         // while it trundles around.
         for (int indep_count = 0; indep_count < nindep; indep_count ++){
-          // Too restrictive with 'real' effort and a start effort of 1
-          //if (indep[indep_count] >= log(10.0)){
-          //  //if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
-          //  indep[indep_count] = log(10.0);
-          //}
+          // Too restrictive with 'real' effort and a start effort of 1?
+          // Getting log(effort_mults) of 1609668617228396 = infinite effort mult
+          double max_indep = 20;
+          if (indep[indep_count] >= max_indep){
+            if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
+            indep[indep_count] = max_indep;
+          }
           //if (indep[indep_count] >= 10.0){
           //  if(verbose){Rprintf("Fishery %i hit indep max limit\n", indep_count + 1);}
           //  indep[indep_count] = 10.0;
           //}
           // Just eats up all iters as trying to get to 0
-          if (indep[indep_count] <= log(1e-12)){
-            //if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
-            indep[indep_count] = log(1e-12);
+          double min_indep = -25;
+          if (indep[indep_count] <= min_indep){
+            if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
+            indep[indep_count] = min_indep;
           }
         }
         
@@ -157,16 +160,3 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 
 
 
-//int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const double indep_min, const double indep_max, const unsigned int max_iters, const double tolerance){
-//  int fuckoff = 0;
-//  
-//  
-//  
-//  
-//  
-//  
-//  
-//  
-//  
-//  return fuckoff;
-//}
