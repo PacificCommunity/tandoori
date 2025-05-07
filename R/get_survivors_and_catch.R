@@ -103,20 +103,23 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
     # For individual fisheries what is F from that fishery as proportion of total Z on stock?
     fprop_fishery <- sweep(fm, c(1,2,4,5,6), z_area, "/")
   
-    nages <- dim(n(biol))[1]
     # Temp objects holder 
     n_after_move <- n(biol)[, as.character(year),,season]
     n_after_move[] <- NA
+    nages <- dim(n(biol))[1]
+    niters <- dim(n(biol))[6]
     
     # N and catch by age
     # General rule: movement then death, so death applied to moved population
-    for (age_count in 1:nages){
-      # Movement happens
-      # iter!!! movement
-      if(!zero_effort){
-        n_after_move[age_count] <- movement(biol)[,, age_count, season,1] %*% n(biol)[age_count, ac(year),, season]
-      } else {
-        n_after_move[age_count] <- movement(biol)[,, age_count, season,1] %*% n0(biol)[age_count, ac(year),, season]
+    # Need to loop over iter and age to use %*%
+    for(iter_count in 1:niters){
+      for (age_count in 1:nages){
+        # Movement happens
+        if(!zero_effort){
+          n_after_move[age_count,,,,,iter_count] <- movement(biol)[,, age_count, season, iter_count] %*% n(biol)[age_count, ac(year),, season,,iter_count]
+        } else {
+          n_after_move[age_count,,,,,iter_count] <- movement(biol)[,, age_count, season, iter_count] %*% n0(biol)[age_count, ac(year),, season,,iter_count]
+        }
       }
     }
     

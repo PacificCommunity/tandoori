@@ -17,14 +17,19 @@ setMethod('simpleBiol', signature(object='FLQuant'),
             # empty object
             object[] <- NA
             units(object) <- "NA"
+            # rec_dist, movement and srr_params need some extra work
             # Set up empty movement: nareas x nareas x nages x nseasons x niters
             dims <- dim(object)
             nareas <- dims[5]
             nages <- dims[1]
             nseasons <- dims[4]
             niters <- dims[6]
-            movement <- array(NA, dim=c(nareas, nareas, nages, nseasons, niters))
-            res <- new("simpleBiol", n=object, n0=object, m=object, wt=object, mat=object, movement=movement)
+            dmns <- dimnames(object)
+            movement <- array(NA, dim=c(nareas, nareas, nages, nseasons, niters),
+                              dimnames=list(to=dmns$area, from=dmns$area, age=dmns$age, season=dmns$season, iter=dmns$iter))
+            rec_dist <- FLQuant(NA, dimnames=list(season=dmns$season, area=dmns$area, iter=dmns$iter))
+            srr_params <- FLPar(NA, dimnames=list(params=c("a", "b", "steepness", "sigma"), iter=dmns$iter))
+            res <- new("simpleBiol", n=object, n0=object, m=object, wt=object, mat=object, movement=movement, rec_dist=rec_dist, srr_params=srr_params)
             # Load given slots
             for(i in names(args)){
               slot(res, i) <- args[[i]]

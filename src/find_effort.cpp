@@ -265,6 +265,17 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x) {return exp(x);});
   std::transform(effort.begin(), effort.end(), effort_mult.begin(), effort.begin(), std::multiplies<double>());
   
+  
+  // Double check final catch weight
+  //std::transform(effort.begin(), effort.end(), effort_ad.begin(), [](double x) {return x;});
+  //std::vector<adouble> final_total_catch_weight_ad = get_catch_wt(effort_ad, n_after_move, m, waa, selq, fishery_map);
+  //for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
+  //    //Rprintf("fishery: %i Final catch: %f\n", fishery_count, Value(final_total_catch_weight_ad[fishery_count]));
+  //    Rprintf("fishery: %i Final effort: %f\n", fishery_count, effort[fishery_count]);
+  //}
+  
+  
+  
   return Rcpp::List::create(
     Rcpp::Named("effort", effort),
     Rcpp::Named("solver_code", solver_code));
