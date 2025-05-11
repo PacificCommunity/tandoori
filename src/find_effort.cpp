@@ -74,7 +74,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
 
 
 // target_type: 0 = catch, 1 = effort
-Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
+Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map, const unsigned int max_solver_iters){
   // Chatty mode
   bool verbose = false;
   if(verbose){Rprintf("\nIn run()\n");}
@@ -137,12 +137,32 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   std::transform(effort_ad.begin(), effort_ad.end(), effort_mult_ad.begin(), effort_ad.begin(), std::multiplies<adouble>());
   
   
+  
   //// Conditional to set max effort - not sure it helps
   //adouble max_effort = 10.0;
   //for (int fishery_count= 0; fishery_count < nfisheries; fishery_count++){
   //  // If effort >  10, then effort = 10
   //  effort_ad[fishery_count] = CppAD::CondExpGt(effort_ad[fishery_count], max_effort, max_effort, effort_ad[fishery_count]);
   //}
+  
+  // Limit effort with differentiable function
+  // But breaks system
+  // i.e. as effort mult goes up, if effort is greater than max it does not change
+  // So disconnect effmult and eff. In solver, effmult keeps going up to no avail
+  // = LU solve error
+  
+  //// out <- 0.5 * (x1 + x2) - sqrt(0.25 * (x1 - x2)^2 + 4 * delta * x2)
+  //double max_effort = 1e4;
+  //double delta = 1e-4;
+  ////std::vector<adouble> temp(nfisheries, effort_initial);
+  ////for (int fcount=0; fcount < nfisheries; fcount++){
+  //  //effort_ad[fcount] = 0.5 * (effort_ad[fcount] + max_effort) - sqrt(0.25 * pow(effort_ad[fcount] - max_effort, 2.0) + 4.0 * delta * max_effort);
+  //  //temp[fcount] = 0.5 * (effort_ad[fcount] + max_effort) - sqrt(0.25 * pow(effort_ad[fcount] - max_effort, 2.0) + 4.0 * delta * max_effort);
+  //  //effort_ad[fcount] = temp;
+  ////}
+  //adouble temp;
+  //temp = 0.5 * (effort_ad[0] + max_effort) - sqrt(0.25 * pow(effort_ad[0] - max_effort, 2.0) + 4.0 * delta * max_effort);
+  //effort_ad[0] = temp;
   
   
   // Get catch weight per fishery with that effort
@@ -256,7 +276,7 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   std::vector<double> log_effort_mult(nfisheries, log(effort_mult_initial));
   if(verbose){Rprintf("Calling solver\n");}
   int solver_code = 0;
-  solver_code = newton_raphson(log_effort_mult, fun, 50, 1e-9);
+  solver_code = newton_raphson(log_effort_mult, fun, max_solver_iters, 1e-9);
   if(verbose){Rprintf("Done solving\n");}
   if(verbose){Rprintf("solver_code: %i\n", solver_code);}
   
@@ -270,8 +290,8 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   //std::transform(effort.begin(), effort.end(), effort_ad.begin(), [](double x) {return x;});
   //std::vector<adouble> final_total_catch_weight_ad = get_catch_wt(effort_ad, n_after_move, m, waa, selq, fishery_map);
   //for (int fishery_count = 0; fishery_count < nfisheries; fishery_count++){
-  //    //Rprintf("fishery: %i Final catch: %f\n", fishery_count, Value(final_total_catch_weight_ad[fishery_count]));
-  //    Rprintf("fishery: %i Final effort: %f\n", fishery_count, effort[fishery_count]);
+  //    Rprintf("fishery: %i Final catch: %f\n", fishery_count, Value(final_total_catch_weight_ad[fishery_count]));
+      //Rprintf("fishery: %i Final effort: %f\n", fishery_count, effort[fishery_count]);
   //}
   
   
@@ -287,9 +307,9 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
 
 // Function exposed to R
 // [[Rcpp::export]]
-Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area){
+Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, const unsigned int max_solver_iters){
   
-  Rcpp::List out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area);
+  Rcpp::List out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_solver_iters);
   
   return out;
 }
