@@ -103,6 +103,7 @@ setClass("simpleFisheries",
            sel      ="FLQuant",
            catch_q     ="FLQuant", # Could be FLPar?
            effort      ="FLQuant",
+           fishery_map = "numeric",
            name     ="character",
            desc     ="character"
            ),
@@ -112,6 +113,7 @@ setClass("simpleFisheries",
            sel      =FLQuant(),
            catch_q     =FLQuant(), # Could be FLPar?
            effort     =FLQuant(),
+           fishery_map = numeric(),
            name = "",
            desc = ""),
          validity = function(object) {
