@@ -39,9 +39,9 @@ double euclid_norm(std::vector<double> x){
  */
 
 
-int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const unsigned int max_iters, const double tolerance){
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, std::vector<double> max_indep, const unsigned int max_iters, const double tolerance){
     unsigned int nindep = indep.size();
-    bool verbose = false;
+    bool verbose = true;
     if(verbose){
       Rprintf("\nIn Newton Raphson\n");
       Rprintf("indep.size(): %i\n", nindep);
@@ -60,7 +60,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
     while(nr_count < max_iters){ 
     //while(nr_count < 20){ 
         ++nr_count;
-        if(verbose){Rprintf("\nIter count: %i\n", nr_count);}
+        if(verbose){Rprintf("\nSolver iter count: %i\n", nr_count);}
     
         // Get f(x0). Eval function at current independent value (current effort mult)
         y = fun.Forward(0, indep); 
@@ -73,6 +73,8 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         }
     
         // Did we hit tolerance?
+        // Just check those not at bounds?
+        if(verbose){Rprintf("Current state: %f\n", euclid_norm(y));}
         if (euclid_norm(y) < tolerance){
           if(verbose){Rprintf("Solved within tolerance!\n");}
           success_code = 1;
@@ -131,24 +133,23 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
           Rprintf("\n");
         }
         
-        // Bluntly enforce limits - horrible mathematically but might be enough to stop solver going to a bad place
-        // while it trundles around.
+        // Bluntly enforce limits - horrible mathematically
+        // But... just eats up all iters as trying to get to 0
+        // Should update convergence critiera if on bounds
         for (int indep_count = 0; indep_count < nindep; indep_count ++){
-          // Too restrictive with 'real' effort and a start effort of 1?
-          // Getting log(effort_mults) of 1609668617228396 = infinite effort mult
-          double max_indep = 20;
-          if (indep[indep_count] >= max_indep){
-            if(verbose){Rprintf("Fishery %i hit indep limit\n", indep_count + 1);}
-            indep[indep_count] = max_indep;
+          if (indep[indep_count] >= max_indep[indep_count]){
+            if(verbose){ Rprintf("Fishery %i hit indep max limit of %f (indep = %f)\n", indep_count + 1, max_indep[indep_count], indep[indep_count]);}
+            //indep[indep_count] = log(1e15);
+            indep[indep_count] = max_indep[indep_count]; // Solver gets stuck
+            // Reduce move indep back half a step - doesn't enforce bounds
+            //indep[indep_count] = indep[indep_count] + delta_indep[indep_count] / 2.0;
+            // Gets stuck
+            //indep[indep_count] = max_indep[indep_count] - (indep[indep_count] - max_indep[indep_count]);
+            //indep[indep_count] = (indep[indep_count] - max_indep[indep_count]);
           }
-          //if (indep[indep_count] >= 10.0){
-          //  if(verbose){Rprintf("Fishery %i hit indep max limit\n", indep_count + 1);}
-          //  indep[indep_count] = 10.0;
-          //}
-          // Just eats up all iters as trying to get to 0
-          double min_indep = -25;
+          double min_indep = log(1e-10);
           if (indep[indep_count] <= min_indep){
-            if(verbose){Rprintf("Fishery %i hit indep min limit\n", indep_count + 1);}
+            if(verbose){Rprintf("Fishery %i hit indep min limit of %f (indep = %f)\n", indep_count + 1, min_indep, indep[indep_count]);}
             indep[indep_count] = min_indep;
           }
         }
@@ -158,5 +159,14 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
     return success_code;
 }
 
+// See here for over shooting bounds
+// https://github.com/arii2016/Numerical-Recipies/blob/master/RTSAFE.C
 
+// Or get this BFGS solver working?
+// https://github.com/yixuan/LBFGSpp
+// Can we define class to be minned after taping?
 
+// Also this - no more Cppad - but no bounds, i.e. no L-BFGS-B?
+// https://optimlib.readthedocs.io/en/latest/
+// Maybe...
+// https://optimlib.readthedocs.io/en/latest/box_constraints.html

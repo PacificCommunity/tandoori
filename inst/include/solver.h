@@ -11,4 +11,4 @@ double euclid_norm(std::vector<double> x);
 
 // A Newton Raphson solver for a function that has already been taped.
 // Pass in the independent variables, tape no. and control parameters
-int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const unsigned int max_iters= 50, const double tolerance = 1.5e-8);
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, std::vector<double> max_indep, const unsigned int max_iters= 50, const double tolerance = 1.5e-8);
