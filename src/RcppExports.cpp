@@ -2,6 +2,7 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include "../inst/include/tandoori.h"
+#include <RcppEigen.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -12,8 +13,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // find_effort
-Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area);
-RcppExport SEXP _tandoori_find_effort(SEXP n_pre_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP movementSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP) {
+Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters);
+RcppExport SEXP _tandoori_find_effort(SEXP n_pre_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP movementSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP, SEXP max_effortSEXP, SEXP max_solver_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,7 +27,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target(targetSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type target_type(target_typeSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area));
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type max_effort(max_effortSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type max_solver_iters(max_solver_itersSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -183,7 +186,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 9},
+    {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 11},
     {"_tandoori_int_test", (DL_FUNC) &_tandoori_int_test, 1},
     {"_tandoori_simple_array_2D_constructor", (DL_FUNC) &_tandoori_simple_array_2D_constructor, 3},
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},
