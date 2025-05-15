@@ -405,6 +405,7 @@ setReplaceMethod("catch_q", signature(object="simpleFisheries", value="numeric")
                    return(object)
                  }
 )
+
 # effort
 #' @rdname simpleFisheries
 #' @aliases effort,simpleFisheries-method
@@ -430,6 +431,38 @@ setReplaceMethod("effort", signature(object="simpleFisheries", value="numeric"),
                  }
 )
 
+# fishery_map
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleFisheries-methods
+setGeneric('fishery_map', function(object, ...) standardGeneric('fishery_map'))
+
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleFisheries-methods
+setGeneric('fishery_map<-', function(object, value, ...) standardGeneric('fishery_map<-'))
+
+#' @rdname simpleFisheries
+#' @aliases fishery_map,simpleFisheries-method
+setMethod("fishery_map", signature(object="simpleFisheries"),
+          function(object) {
+            return(slot(object, "fishery_map"))
+          }
+)
+
+setReplaceMethod("fishery_map", signature(object="simpleFisheries", value="numeric"),
+                 function(object, value) {
+                   slot(object, "fishery_map") <- value
+                   return(object)
+                 }
+)
+
+#' @rdname simpleFisheries
+#' @aliases catch_q<-,simpleFisheries,numeric-method
+setReplaceMethod("catch_q", signature(object="simpleFisheries", value="numeric"),
+                 function(object, value) {
+                   slot(object, "catch_q")[] <- value
+                   return(object)
+                 }
+)
 
 # name
 #' @rdname simpleFisheries

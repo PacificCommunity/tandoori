@@ -70,7 +70,9 @@ setMethod('simpleFisheries', signature(object='FLQuant'),
             # empty object
             object[] <- NA
             units(object) <- "NA"
-            res <- new("simpleFisheries", catch_n=object, catch_wt=object, sel=object, catch_q=object[1,], effort=object[1,])
+            nfisheries <- dim(object)[3]
+            fishery_map <- as.numeric(rep(NA, nfisheries))
+            res <- new("simpleFisheries", catch_n=object, catch_wt=object, sel=object, catch_q=object[1,], effort=object[1,], fishery_map=fishery_map)
             # Load given slots
             for(i in names(args)){
               slot(res, i) <- args[[i]]

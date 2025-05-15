@@ -98,10 +98,26 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
       fm[] <- 0
     }
     
-    fmort_area <- unitSums(fm)
-    z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
-    # For individual fisheries what is F from that fishery as proportion of total Z on stock?
-    fprop_fishery <- sweep(fm, c(1,2,4,5,6), z_area, "/")
+    #fmort_area <- unitSums(fm)
+    #z_area <- m(biol)[, ac(year),,ac(season)] + fmort_area # z by age and area
+    ## For individual fisheries what is F from that fishery as proportion of total Z on stock?
+    #fprop_fishery <- sweep(fm, c(1,2,4,5,6), z_area, "/")
+    
+    # With no area dim in the fishery we use a for loop - fairly fast
+    fmort_area <- m(biol)[, ac(year),,season]
+    fmort_area[] <- NA
+    z_area <- fmort_area
+    # fprop_fishery needs area dimension
+    nareas <- dim(n(biol))[5]
+    fprop_fishery <- expand(sel(fisheries)[, ac(year),,season], area=1:nareas)
+    fprop_fishery[] <- 0 # Until otherwise
+    
+    for (area_count in 1:nareas){
+      f_in_area <- fishery_map(fisheries) == area_count
+      fmort_area[,,,,area_count] <- apply(fm[,,f_in_area], c(1,2,4:6), sum)
+      z_area[,,,,area_count] <- fmort_area[,,,,area_count] + m(biol)[, ac(year),, ac(season), area_count]
+      fprop_fishery[,,f_in_area,,area_count] <- sweep(fm[,,f_in_area], c(1,2,4,5,6), z_area[,,,,area_count], "/")
+    }
   
     # Temp objects holder 
     n_after_move <- n(biol)[, as.character(year),,season]
@@ -128,6 +144,8 @@ setMethod("get_survivors_and_catch", signature(fisheries="simpleFisheries", biol
     # Apply death to moved population and get catch
     prop_dead <- sweep(fprop_fishery, c(1,2,4,5,6), (1-exp(-z_area)), "*")
     catch_out <- sweep(prop_dead, c(1,2,4,5,6), n_after_move, "*")
+    # Sum areas for catch
+    catch_out <- apply(catch_out, c(1,2,3,4,6), sum)
   
     # Sort out plusgroup
     # move everyone down an age, insert NA at top, and sum last two ages
