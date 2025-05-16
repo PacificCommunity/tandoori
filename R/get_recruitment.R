@@ -57,7 +57,7 @@ setMethod("get_annual_recruitment", signature(object="simpleBiol"),
     total_rec <- (ssb_total * srr_params(object)["a"]) / (ssb_total +  srr_params(object)["b"]) * exp(srr_params(object)["sigma"]/2)
     total_rec_with_dev <- total_rec - srr_devs[, ac(year)]
   # Spread over areas and seasons - based on what...
-    new_rec <- sweep(rec_dist(bet), c(1,2,3,6), total_rec_with_dev, "*")
+    new_rec <- sweep(rec_dist(object), c(1,2,3,6), total_rec_with_dev, "*")
     return(new_rec)
   }
 )
