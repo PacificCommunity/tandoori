@@ -117,9 +117,9 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   double fx;
   int niter = solver.minimize(effort_fun, x, fx, lb, ub);
   
-  Rprintf("niter: %i\n", niter);
+  //Rprintf("niter: %i\n", niter);
   //Rprintf("x[0]: %f\n", x[0]);
-  Rprintf("f(x): %f\n", fx);
+  //Rprintf("f(x): %f\n", fx);
   
   std::vector<double> final_effort(nfisheries, 0.0);
   // Assuming initial effort is 1.0 !
@@ -128,7 +128,9 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
   }
   
   return Rcpp::List::create(
-    Rcpp::Named("effort", final_effort));
+    Rcpp::Named("effort", final_effort),
+    Rcpp::Named("solver_iters", niter),
+    Rcpp::Named("final_value", fx));
 }
 
 
