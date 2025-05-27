@@ -5,7 +5,7 @@
 
 #include "../inst/include/projection_functions.h"
 
-simple_array_2D get_n_after_movement(simple_array_2D n_pre_move, simple_array_3D movement){
+simple_array_2D get_n_after_movement(simple_array_2D& n_pre_move, simple_array_3D& movement){
 	// Make a new simple_array_2D that is filled with 0s
 	std::vector<unsigned int> ndim = n_pre_move.get_dim();
 	simple_array_2D n_after_move(ndim[0], ndim[1], 0.0);

@@ -13,6 +13,6 @@
 #include "simple_array_3D.h"
 #endif
 
-simple_array_2D get_n_after_movement(simple_array_2D n_pre_move, simple_array_3D movement);
+simple_array_2D get_n_after_movement(simple_array_2D& n_pre_move, simple_array_3D& movement);
 
 std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_map);
