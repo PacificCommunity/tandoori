@@ -7,7 +7,7 @@
 
 
 // Main function that calcs the error given the log_effort_mult
-adouble get_error(std::vector<adouble> log_effort_mult, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map){
+adouble get_error(std::vector<adouble>& log_effort_mult, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::NumericVector& target, Rcpp::IntegerVector& target_type, Rcpp::IntegerVector& fishery_map){
   bool verbose = false;
   // Make effort vector based on new log_effort_mult
   //  if(verbose){Rprintf("\nUpdating effort with multipler\n");}
@@ -49,7 +49,7 @@ adouble get_error(std::vector<adouble> log_effort_mult, simple_array_2D n_after_
   return out;
 }
 
-EffortFun::EffortFun(int nfisheries_, simple_array_2D n_after_move, simple_array_2D m, simple_array_2D waa, simple_array_2D selq, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map) {
+EffortFun::EffortFun(int nfisheries_, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::NumericVector& target, Rcpp::IntegerVector& target_type, Rcpp::IntegerVector& fishery_map) {
   nfisheries = nfisheries_;
   // Tape the function at some initial value
   // What are we finding? Log effort mult again? Initialise
@@ -86,7 +86,7 @@ double EffortFun::operator()(const Eigen::VectorXd& x, Eigen::VectorXd& grad)  {
 
 
 
-Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
+Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
   
   bool verbose = false;
   auto nfisheries = selq.get_dim()[1];
@@ -138,7 +138,8 @@ Rcpp::List run(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D wa
 // [[Rcpp::export]]
 Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
   
-  Rcpp::List out = run(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters);
+  Rcpp::List out = solve_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters);
   
   return out;
 }
+
