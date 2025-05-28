@@ -56,7 +56,7 @@ std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D&
       auto area_index = fishery_area[fishery_count] - 1;
       adouble catch_n_temp = (f_fishery[fishery_count] / total_z[area_index]) * (1 - exp(-1 * total_z[area_index])) * n_after_move(age_count, area_index);
       // Multiply CN at age by Waa and sum into total catch wt
-      total_catch_wt[fishery_count] += catch_n_temp * waa(age_count, area_index);
+      total_catch_wt[fishery_count] += catch_n_temp * waa(age_count, fishery_count);
     }
    //if(age_count == 5){return(total_z);} // Just testing if total Z is coming out OK
   }
