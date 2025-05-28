@@ -40,7 +40,7 @@ adouble get_error(std::vector<adouble>& log_effort_mult, simple_array_2D& n_afte
       Rcpp::stop("Unrecognised target type for fishery %i.", fcount);
     }
     // Get error
-    error[fcount] = log(target[fcount]) - log(hat[fcount]);
+    error[fcount] = log(target[fcount] / hat[fcount]);
   }
   // Square, sum and return
   // Force type of initial value to be adouble
