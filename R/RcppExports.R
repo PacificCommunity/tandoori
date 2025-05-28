@@ -5,6 +5,10 @@ find_effort <- function(n_pre_move, m, waa, movement, selq, effort_mult_initial,
     .Call(`_tandoori_find_effort`, n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters)
 }
 
+project <- function(n_pre_move, n0_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters) {
+    .Call(`_tandoori_project`, n_pre_move, n0_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters)
+}
+
 int_test <- function(dummy) {
     .Call(`_tandoori_int_test`, dummy)
 }

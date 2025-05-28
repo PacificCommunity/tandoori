@@ -33,6 +33,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// project
+Rcpp::List project(simple_array_2D n_pre_move, simple_array_2D n0_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters);
+RcppExport SEXP _tandoori_project(SEXP n_pre_moveSEXP, SEXP n0_pre_moveSEXP, SEXP mSEXP, SEXP waaSEXP, SEXP movementSEXP, SEXP selqSEXP, SEXP effort_mult_initialSEXP, SEXP targetSEXP, SEXP target_typeSEXP, SEXP fishery_areaSEXP, SEXP max_effortSEXP, SEXP max_solver_itersSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< simple_array_2D >::type n_pre_move(n_pre_moveSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type n0_pre_move(n0_pre_moveSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type m(mSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type waa(waaSEXP);
+    Rcpp::traits::input_parameter< simple_array_3D >::type movement(movementSEXP);
+    Rcpp::traits::input_parameter< simple_array_2D >::type selq(selqSEXP);
+    Rcpp::traits::input_parameter< double >::type effort_mult_initial(effort_mult_initialSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type target_type(target_typeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type fishery_area(fishery_areaSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type max_effort(max_effortSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type max_solver_iters(max_solver_itersSEXP);
+    rcpp_result_gen = Rcpp::wrap(project(n_pre_move, n0_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters));
+    return rcpp_result_gen;
+END_RCPP
+}
 // int_test
 int int_test(int dummy);
 RcppExport SEXP _tandoori_int_test(SEXP dummySEXP) {
@@ -187,6 +209,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 11},
+    {"_tandoori_project", (DL_FUNC) &_tandoori_project, 12},
     {"_tandoori_int_test", (DL_FUNC) &_tandoori_int_test, 1},
     {"_tandoori_simple_array_2D_constructor", (DL_FUNC) &_tandoori_simple_array_2D_constructor, 3},
     {"_tandoori_simple_array_2D_as_wrap_test", (DL_FUNC) &_tandoori_simple_array_2D_as_wrap_test, 1},

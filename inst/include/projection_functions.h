@@ -15,4 +15,6 @@
 
 simple_array_2D get_n_after_movement(simple_array_2D& n_pre_move, simple_array_3D& movement);
 
-std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_map);
+std::vector<adouble> get_catch_wt(std::vector<adouble>& effort, simple_array_2D& n_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_area);
+
+Rcpp::List get_survivors_and_catch(std::vector<double>& effort, simple_array_2D& n_after_move, simple_array_2D& n0_after_move, simple_array_2D& m, simple_array_2D& waa, simple_array_2D& selq, Rcpp::IntegerVector& fishery_area);

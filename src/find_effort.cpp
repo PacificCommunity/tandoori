@@ -143,3 +143,28 @@ Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_arr
   return out;
 }
 
+// Just function exposed to R
+// [[Rcpp::export]]
+Rcpp::List project(simple_array_2D n_pre_move, simple_array_2D n0_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
+  
+  Rcpp::List solve_out = solve_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters);
+  
+  std::vector<double> effort = solve_out["effort"];
+
+  simple_array_2D n_after_move = get_n_after_movement(n_pre_move, movement);
+  simple_array_2D n0_after_move = get_n_after_movement(n0_pre_move, movement);
+  
+  // Get and survivors and catch_n with new effort
+  Rcpp::List pout = get_survivors_and_catch(effort, n_after_move, n0_after_move, m, waa, selq, fishery_area);
+
+  
+  //return pout;
+  return Rcpp::List::create(
+    Rcpp::Named("effort", solve_out["effort"]),
+    Rcpp::Named("solver_iters", solve_out["solver_iters"]),
+    Rcpp::Named("final_value", solve_out["final_value"]),
+    Rcpp::Named("catch_n", pout["catch_n"]),
+    Rcpp::Named("survivors", pout["survivors"]),
+    Rcpp::Named("survivors0", pout["survivors0"])
+  );
+}
