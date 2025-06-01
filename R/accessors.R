@@ -498,6 +498,23 @@ setReplaceMethod("desc", signature(object="simpleFisheries", value="character"),
 
 
 
+# catch
+#' @rdname simpleFisheries
+#' @aliases simpleFisheries simpleBiol-methods
+setGeneric('catch', function(object, ...) standardGeneric('catch'))
+
+
+#' @rdname simpleFisheries
+#' @aliases catch,simpleFisheries-method
+setMethod("catch", signature(object="simpleFisheries"),
+          function(object) {
+            return(quantSums(slot(object, "catch_n") * slot(object, "catch_wt")))
+          }
+)
+
+
+
+
 
 
 
