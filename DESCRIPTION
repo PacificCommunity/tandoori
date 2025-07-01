@@ -11,12 +11,13 @@ Depends:
   FLCore (>= 2.6.19.9032)
 Imports:
   Rcpp (>= 1.0.13),
+  RcppEigen,
   tools,
   utils
 Suggests:
   knitr,
   rmarkdown
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppEigen
 License: GPL (>= 2) 
 LazyLoad: Yes
 LazyData: No

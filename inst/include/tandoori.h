@@ -9,5 +9,6 @@
 #include "simple_array_3D.h"
 #include "find_effort.h"
 
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::plugins(cpp17)]]
 
