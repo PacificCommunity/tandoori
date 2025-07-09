@@ -30,6 +30,7 @@ Collate:
   sb_methods.R
   RcppExports.R
   data.R
+  simple_mp_class.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
