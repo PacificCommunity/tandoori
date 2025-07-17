@@ -312,5 +312,27 @@ hcr_asymptotic_hillary_step_constrained <- function(hcr_ip, params, reference_ou
   return(out)
 }
 
+# Method to get shape coordinates for plotting
+#' @rdname accessor-methods
+setGeneric('get_hcr_shape', function(object, ...) standardGeneric('get_hcr_shape'))
+#' @rdname accessor-methods
+setMethod('get_hcr_shape', signature(object='simpleMP'),
+  function(object, hcr_ip) {
+  hcr_type <- hcr(object)
+  # If constrained - turn type into not constrained and get new params
+  hcr_type <- strsplit(hcr_type, "_constrained")[[1]][1]
+  names(hcr_params(object))
+  hcr_params_cols <- names(hcr_params(object))[
+    !(names(hcr_params(object)) %in%
+      c("z", "type", "max_change_up", "max_change_down"))
+  ]
+  hcr_params <- hcr_params(object)[hcr_params_cols]
+  # Make a new MP with those params and evaluate it
+  newmp <- simpleMP()
+  hcr(newmp) <- hcr_type
+  hcr_params(newmp) <- hcr_params
+  out <- data.frame(hcr_ip = hcr_ip, hcr_op = eval_hcr(newmp, hcr_ip))
+  return(out)
+})
 
 

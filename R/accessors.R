@@ -513,7 +513,47 @@ setMethod("catch", signature(object="simpleFisheries"),
 )
 
 
+# iter accessors - borrowed mainly from FLCore
+#' @rdname simpleBiol
+#' @aliases iter,simpleBiol-method
+setMethod("iter", signature(obj="simpleBiol"),
+  function(obj, iter) {
+    # FLQs: n, n0, m, wt, mat, rec_dist,
+    # FLP: srr_params,
+    # array: movement
 
+    # Slots that are FLQuant or FLpar
+    FLQPnames <- c(getSlotNamesClass(obj, 'FLArray'), getSlotNamesClass(obj, 'FLPar'))
+    for(s. in FLQPnames) {
+      # Just subset out the iters we want
+      slot(obj, s.) <- iter(slot(obj, s.), iter)
+    }
+    # Do movement separately as array
+    # Just subset out - no propagate
+    # If movement iters = 1, leave it alone
+    # If more than one iter, attempt to subset
+    if(dim(movement(obj))[5]> 1){
+      movement(obj) <- movement(obj)[,,,,iter]
+    }
+    return(obj)
+  }
+) # }}}
+
+#' @rdname simpleFisheries
+#' @aliases iter,simpleFisheries-method
+setMethod("iter", signature(obj="simpleFisheries"),
+  function(obj, iter) {
+    # FLQs: catch_n, catch_wt, sel, catch_q, effort
+    # That's it
+    # Slots that are FLQuant or FLpar
+    FLQPnames <- c(getSlotNamesClass(obj, 'FLArray'), getSlotNamesClass(obj, 'FLPar'))
+    for(s. in FLQPnames) {
+      # Just subset out the iters we want
+      slot(obj, s.) <- iter(slot(obj, s.), iter)
+    }
+    return(obj)
+  }
+) # }}}
 
 
 
