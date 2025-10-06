@@ -1,4 +1,4 @@
-#  
+#
 #  Copyright 2025 Finlay Scott. Distributed under the GPL 2 or later
 #  Maintainer: Finlay Scott
 #
@@ -11,7 +11,7 @@
 #' This includes information on abundances, natural mortality and maturity.
 #'
 #' @name simpleBiol
-#' @aliases simpleBiol-class n,simpleBiol-method m,simpleBiol-method wt,simpleBiol-method name,simpleBiol-method desc,simpleBiol-method n<-,simpleBiol,FLQuant-method m<-,simpleBiol,FLQuant-method wt<-,simpleBiol,FLQuant-method name<-,simpleBiol,character-method desc<-,simpleBiol,character-method 
+#' @aliases simpleBiol-class n,simpleBiol-method m,simpleBiol-method wt,simpleBiol-method name,simpleBiol-method desc,simpleBiol-method n<-,simpleBiol,FLQuant-method m<-,simpleBiol,FLQuant-method wt<-,simpleBiol,FLQuant-method name<-,simpleBiol,character-method desc<-,simpleBiol,character-method
 #' @docType class
 #' @section Slots: \describe{
 #'   \item{n}{Numbers in the population. \code{FLQuant}.}
@@ -24,8 +24,6 @@
 #'   \item{movement}{Movement rates between model areas. \code{array}.}
 #'   \item{name}{Name of the object. \code{character}.}
 #'   \item{desc}{Brief description of the object. \code{character}.}
-#' @template Accessors
-#' @template Constructors
 #' @section Validity: \describe{
 #'     \item{Dimensions}{All FLQuant slots must have iters equal to 1 or 'n'.}
 #'     \item{Iters}{The dimname for iter[1] should be '1'.}
@@ -35,35 +33,36 @@
 #' @keywords classes
 
 setClass("simpleBiol",
-         representation(
-           n        ="FLQuant",
-           n0        ="FLQuant",
-           m        ="FLQuant",
-           wt       ="FLQuant",
-           mat      ="FLQuant",
-           rec_dist ="FLQuant",
-           srr_params = "FLPar",
-           movement = "array",
-           name     ="character",
-           desc     ="character"
-           ),
-         prototype=prototype(
-           n        = FLQuant(),
-           n0        = FLQuant(),
-           m        = FLQuant(),
-           wt       = FLQuant(),
-           mat      = FLQuant(),
-           rec_dist = FLQuant(),
-           srr_params = FLPar(),
-           movement = array(),
-           name = "",
-           desc = ""),
-         validity = function(object) {
-           # To do
-           # Dim of movement should be 5
-           # Set up empty movement: nareas x nareas x nages x nseasons x niters
-           return(TRUE)
-         }
+  representation(
+    n = "FLQuant",
+    n0 = "FLQuant",
+    m = "FLQuant",
+    wt = "FLQuant",
+    mat = "FLQuant",
+    rec_dist = "FLQuant",
+    srr_params = "FLPar",
+    movement = "array",
+    name = "character",
+    desc = "character"
+  ),
+  prototype = prototype(
+    n = FLQuant(),
+    n0 = FLQuant(),
+    m = FLQuant(),
+    wt = FLQuant(),
+    mat = FLQuant(),
+    rec_dist = FLQuant(),
+    srr_params = FLPar(),
+    movement = array(),
+    name = "",
+    desc = ""
+  ),
+  validity = function(object) {
+    # To do
+    # Dim of movement should be 5
+    # Set up empty movement: nareas x nareas x nages x nseasons x niters
+    return(TRUE)
+  }
 )
 
 #' Class simpleFisheries
@@ -76,7 +75,7 @@ setClass("simpleBiol",
 #' Fisheries are stored in the unit dimension.
 #'
 #' @name simpleFisheries
-#' @aliases simpleFisheries-class 
+#' @aliases simpleFisheries-class
 #' @docType class
 #' @section Slots: \describe{
 #'   \item{catch_n}{Catch numbers. \code{FLQuant}.}
@@ -86,8 +85,6 @@ setClass("simpleBiol",
 #'   \item{effort}{Fishing effort. \code{FLQuant}.}
 #'   \item{name}{Name of the object. \code{character}.}
 #'   \item{desc}{Brief description of the object. \code{character}.}
-#' @template Accessors
-#' @template Constructors
 #' @section Validity: \describe{
 #'     \item{Dimensions}{All FLQuant slots must have iters equal to 1 or 'n'.}
 #'     \item{Iters}{The dimname for iter[1] should be '1'.}
@@ -97,28 +94,28 @@ setClass("simpleBiol",
 #' @keywords classes
 
 setClass("simpleFisheries",
-         representation(
-           catch_n        ="FLQuant",
-           catch_wt       ="FLQuant",
-           sel      ="FLQuant",
-           catch_q     ="FLQuant", # Could be FLPar?
-           effort      ="FLQuant",
-           fishery_map = "numeric",
-           name     ="character",
-           desc     ="character"
-           ),
-         prototype=prototype(
-           catch_n        =FLQuant(),
-           catch_wt       =FLQuant(),
-           sel      =FLQuant(),
-           catch_q     =FLQuant(), # Could be FLPar?
-           effort     =FLQuant(),
-           fishery_map = numeric(),
-           name = "",
-           desc = ""),
-         validity = function(object) {
-           # To do
-           return(TRUE)
-         }
+  representation(
+    catch_n = "FLQuant",
+    catch_wt = "FLQuant",
+    sel = "FLQuant",
+    catch_q = "FLQuant", # Could be FLPar?
+    effort = "FLQuant",
+    fishery_map = "numeric",
+    name = "character",
+    desc = "character"
+  ),
+  prototype = prototype(
+    catch_n = FLQuant(),
+    catch_wt = FLQuant(),
+    sel = FLQuant(),
+    catch_q = FLQuant(), # Could be FLPar?
+    effort = FLQuant(),
+    fishery_map = numeric(),
+    name = "",
+    desc = ""
+  ),
+  validity = function(object) {
+    # To do
+    return(TRUE)
+  }
 )
-

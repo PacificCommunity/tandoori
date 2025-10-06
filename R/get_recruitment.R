@@ -14,20 +14,19 @@
 #' @param rec_dist Proportion of total annual recruitment in each season and region
 
 get_recruitment_orig <- function(
-  pop_n,
-  waa,
-  mat,
-  srr_params,
-  srr_devs,
-  rec_dist
-) {
+    pop_n,
+    waa,
+    mat,
+    srr_params,
+    srr_devs,
+    rec_dist) {
   # Get total annual average SSB in year y
   ssb_total <- seasonMeans(areaSums(quantSums(pop_n * waa * mat))) / 1000
   # Get total rec in year y+1
   # Beverton Holt with bias correction
-  total_rec <- (ssb_total * srr_params['a']) /
-    (ssb_total + srr_params['b']) *
-    exp(srr_params['sigma'] / 2)
+  total_rec <- (ssb_total * srr_params["a"]) /
+    (ssb_total + srr_params["b"]) *
+    exp(srr_params["sigma"] / 2)
   # Apply deviate from year y+1
   total_rec_with_dev <- total_rec - srr_devs
   # Spread over areas and seasons - based on what...
@@ -47,7 +46,7 @@ get_recruitment_orig <- function(
 #' @examples
 #' \dontrun{
 #' data(bet_projection_low_catch_bits_simple)
-#' annual_rec <- get_annual_recruitment(bet, year=ycount, srr_devs=srr_devs)
+#' annual_rec <- get_annual_recruitment(bet, year = ycount, srr_devs = srr_devs)
 #' }
 setGeneric("get_annual_recruitment", function(object, ...) {
   standardGeneric("get_annual_recruitment")
@@ -61,15 +60,16 @@ setMethod(
     # Maybe types too - add to dispatch
     # Get ssb in previous year
     # Marginally faster to go by hand, rather than calling ssb() then subsetting year
+    # browser()
     if (!zero_effort) {
-      ssb_total <- seasonMeans(areaSums(quantSums(
+      ssb_total <- FLCore::seasonMeans(FLCore::areaSums(FLCore::quantSums(
         n(object)[, ac(year - 1)] *
           mat(object)[, ac(year - 1)] *
           wt(object)[, ac(year - 1)]
       ))) /
         1000
     } else {
-      ssb_total <- seasonMeans(areaSums(quantSums(
+      ssb_total <- FLCore::seasonMeans(FLCore::areaSums(FLCore::quantSums(
         n0(object)[, ac(year - 1)] *
           mat(object)[, ac(year - 1)] *
           wt(object)[, ac(year - 1)]
