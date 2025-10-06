@@ -207,6 +207,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP run_testthat_tests(SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_find_effort", (DL_FUNC) &_tandoori_find_effort, 11},
     {"_tandoori_project", (DL_FUNC) &_tandoori_project, 12},
@@ -222,6 +224,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tandoori_simple_array_3D_constructor", (DL_FUNC) &_tandoori_simple_array_3D_constructor, 4},
     {"_tandoori_test_3D_iterator", (DL_FUNC) &_tandoori_test_3D_iterator, 1},
     {"_tandoori_movement_test", (DL_FUNC) &_tandoori_movement_test, 2},
+    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
 

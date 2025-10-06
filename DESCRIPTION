@@ -1,5 +1,5 @@
 Package: tandoori
-Title: Tools for projecting tuna operating models 
+Title: Tools for projecting tuna operating models
 Version: 0.1
 Date: 2025-03-27
 Authors@R: c(person("Finlay", "Scott", role=c("aut","cre"), email="drfinlayscott@gmail.com"),
@@ -17,9 +17,10 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
-LinkingTo: Rcpp, RcppEigen
-License: GPL (>= 2) 
+    testthat (>= 3.0.0),
+    xml2
+LinkingTo: Rcpp, RcppEigen, testthat
+License: GPL (>= 2)
 LazyLoad: Yes
 LazyData: No
 Collate:

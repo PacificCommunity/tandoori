@@ -34,6 +34,8 @@ get_recruitment_orig <- function(
   return(new_rec)
 }
 
+#' Annual recruitment
+#'
 #' @rdname get_annual_recruitment
 #' @description
 #' Calculates recruitment in all seasons and areas of a year.

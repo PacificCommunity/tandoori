@@ -21,6 +21,7 @@
 #' @param catch_q Catchability
 #' @param fishery_area Vector of which model region each fishery operates in
 #' @return A list of survivors and catch numbers at age
+#' @useDynLib tandoori, .registration=TRUE
 #' @export
 get_survivors_and_catch_orig <- function(effort, pop_n, m, movement, sel, catch_q, fishery_area) {
   nareas <- dim(pop_n)[5]
