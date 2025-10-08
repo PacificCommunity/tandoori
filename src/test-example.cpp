@@ -15,7 +15,7 @@
 // Declare exported function
 int int_test(int dummy);
 
-context("C++ works") {
+context("cpp dummy function") {
   test_that("double function") {
     expect_true(int_test(2) == 4);
     expect_true(int_test(-2) == -4);
