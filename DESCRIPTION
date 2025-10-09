@@ -24,7 +24,7 @@ Suggests:
 LinkingTo: Rcpp, RcppEigen, testthat
 License: GPL (>= 2)
 LazyLoad: Yes
-LazyData: No
+LazyData: Yes
 Collate:
   simple_classes.R
   constructors.R
