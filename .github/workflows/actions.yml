@@ -1,5 +1,5 @@
 name: Run R Package Tests
-
+run-name: ${{ github.actor }} triggered Github Actions
 on: [ push ]
 
 jobs:
