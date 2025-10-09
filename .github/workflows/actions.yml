@@ -15,7 +15,7 @@ jobs:
         with:
           r-version: 'release'
 
-      - name: Install devtools
+      - name: Install testthat
         run: Rscript -e 'install.packages("testthat")'
 
       - name: Install package dependencies
@@ -24,7 +24,7 @@ jobs:
           extra-packages: testthat
           cache: true
 
-      - name: Run devtools::test()
+      - name: Run testthat::test_local()
         run: Rscript -e 'testthat::test_local()'
 
 

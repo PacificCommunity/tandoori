@@ -75,3 +75,8 @@ test_that("find_effort", {
 
   expect_equal(length(effout), 3)
 })
+
+
+test_that("failing test", {
+  expect_equal(2, 3)
+})
