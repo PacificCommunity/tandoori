@@ -7,13 +7,15 @@ Authors@R: c(person("Finlay", "Scott", role=c("aut","cre"), email="drfinlayscott
 Description: Tools for projecting tuna operating models. Uses a combination of R and C++. CppAD source code is also included so that automatic differentiation can be used.
 Depends:
   R (>= 4.0),
-  methods,
-  FLCore (>= 2.6.19.9032)
+  methods
 Imports:
+  FLCore (>= 2.6.19.9032),
   Rcpp (>= 1.0.13),
   RcppEigen,
   tools,
   utils
+Remotes:
+  flr/FLCore
 Suggests:
     knitr,
     rmarkdown,
@@ -22,7 +24,7 @@ Suggests:
 LinkingTo: Rcpp, RcppEigen, testthat
 License: GPL (>= 2)
 LazyLoad: Yes
-LazyData: No
+LazyData: Yes
 Collate:
   simple_classes.R
   constructors.R
