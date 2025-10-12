@@ -26,6 +26,3 @@ jobs:
 
       - name: Run testthat::test_local()
         run: Rscript -e 'testthat::test_local()'
-
-
-
