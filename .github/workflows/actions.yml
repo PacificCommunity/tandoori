@@ -1,10 +1,9 @@
 name: Run R Package Tests
-run-name: ${{ github.actor }} triggered GitHub Actions
-
-on: [push]
+run-name: ${{ github.actor }} triggered Github Actions
+on: [ push ]
 
 jobs:
-  run-devtools-tests:
+  Run-devtools-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,11 +15,14 @@ jobs:
         with:
           r-version: 'release'
 
-      - name: Install dependencies
+      - name: Install testthat
+        run: Rscript -e 'install.packages("testthat")'
+
+      - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          extra-packages: testthat
           cache: true
-          extra-packages: any::testthat, local::.
 
-      - name: Run tests
+      - name: Run testthat::test_local()
         run: Rscript -e 'testthat::test_local()'
