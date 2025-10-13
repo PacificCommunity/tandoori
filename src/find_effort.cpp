@@ -56,7 +56,7 @@ adouble get_error(std::vector<adouble>& log_effort_mult, simple_array_2D& n_afte
       Rcpp::stop("Unrecognised target type for fishery %i.", fcount);
     }
     // Get error
-    error[fcount] = log(target[fcount] / hat[fcount]);
+    error[fcount] = log(target[fcount] / hat[fcount]); // I think this is where it breaks because target is larger than hat
   }
   // Square, sum and return
   // Force type of initial value to be adouble
@@ -141,12 +141,39 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   // Create solver object
   LBFGSpp::LBFGSBSolver<double> solver(param);  // New solver class
 
-  // Initialise function to be solved - do taping in constructor
+  // Montana's version:
+  // Only solve for catch fisheries.
+  int ncatchfisheries = std::count(target_type.begin(), target_type.end(), 0);
+  Rprintf("ncatchfisheries: %i\n", ncatchfisheries);
+
+  if(ncatchfisheries>0){
+    std::vector<double> new_target(ncatchfisheries);
+    std::vector<int> new_target_type(ncatchfisheries, 0);
+    Rprintf("new_target: %i\n", new_target[0]);
+    Rprintf("new_target_type: %i\n", new_target_type[0]);
+
+    Rcpp::NumericVector new_target2(ncatchfisheries);
+    Rcpp::NumericVector new_target_type2(ncatchfisheries);
+    for (int i = 0, j = 0; i < nfisheries; i++) {
+      if (target_type[i] == 0) {
+        new_target2[j++] = target[i];
+        new_target_type2[j] = 0;
+      }
+    }
+    Rcpp::Rcout << "The value of new_target2 : " << new_target2 << "\n";
+
+    // EffortFun catch_only_effort_fun(ncatchfisheries, n_after_move, m, waa, selq, new_target, new_target_type, fishery_map);
+  }
+
+  // Eigen::VectorXd new_x = Eigen::VectorXd::Zero(ncatchfisheries);
+  // double fx;
+  // int niter = solver.minimize(catch_only_effort_fun, new_x, fx, lb, ub);
+
   EffortFun effort_fun(nfisheries, n_after_move, m, waa, selq, target, target_type, fishery_map);
-  // Initial guess
   Eigen::VectorXd x = Eigen::VectorXd::Zero(nfisheries);
   double fx;
   int niter = solver.minimize(effort_fun, x, fx, lb, ub);
+
 
   //Rprintf("niter: %i\n", niter);
   //Rprintf("x[0]: %f\n", x[0]);
