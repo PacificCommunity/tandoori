@@ -10,7 +10,6 @@ solve_effort(
   waa,
   movement,
   selq,
-  effort_mult_initial,
   target,
   target_type,
   fishery_map,
@@ -29,8 +28,6 @@ solve_effort(
 
 \item{selq}{a 2D array of selectivity-at-age by fishery}
 
-\item{effort_mult_initial}{numeric initial guess of effort multiplier for solver}
-
 \item{target}{numeric vector of targets by fishery}
 
 \item{target_type}{integer vector of target types by fishery (0 = catch, 1 = effort)}
@@ -44,7 +41,7 @@ solve_effort(
 \item{fishery_area}{integer vector indicating which area each fishery operates in}
 }
 \value{
-list of solve_effort().
+list of effort, solver info and updated population quantities
 }
 \description{
 Originally, solve_effort() was not exposed to R, but now it is exported to help with documentation.
