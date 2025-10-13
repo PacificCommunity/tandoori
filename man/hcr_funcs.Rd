@@ -5,13 +5,13 @@
 \alias{hcr_asymptotic}
 \alias{hcr_constant}
 \alias{hcr_hillary_step}
-\alias{hcr_constrained}
 \alias{hcr_asymptotic_constrained}
+\alias{hcr_constrained}
 \alias{hcr_threshold_constrained}
 \alias{hcr_hillary_step_constrained}
 \alias{hcr_asymptotic_hillary_step}
 \alias{hcr_asymptotic_hillary_step_constrained}
-\title{Harvest control rule threshold}
+\title{A bunch of harvest control rule functions}
 \usage{
 hcr_threshold(hcr_ip, params)
 
@@ -21,9 +21,9 @@ hcr_constant(hcr_ip, params)
 
 hcr_hillary_step(hcr_ip, params)
 
-hcr_constrained(hcr_ip, params, reference_out, hcr_func)
-
 hcr_asymptotic_constrained(hcr_ip, params, reference_out)
+
+hcr_constrained(hcr_ip, params, reference_out, hcr_func)
 
 hcr_threshold_constrained(hcr_ip, params, reference_out)
 
@@ -36,22 +36,19 @@ hcr_asymptotic_hillary_step_constrained(hcr_ip, params, reference_out)
 \arguments{
 \item{hcr_ip}{Numeric vector of HCR inputs}
 
-\item{params}{Numeric vector of HCR parameters.}
+\item{params}{Numeric vector of HCR parameters}
 
 \item{reference_out}{The reference level that the constraint is applied to.}
 
-\item{hcr_func}{Character string of the function name}
+\item{hcr_fun}{Character hcr function name}
 }
 \value{
-Numberic vector of the HCR output
-
-Numberic vector of the HCR output
-
-Numberic vector of the HCR output
-
-Numberic vector of the HCR output
+Numeric vector of the HCR output
 }
 \description{
+See details.
+}
+\details{
 \strong{Threshold}: typical HCR function with the parameters hcr_ip_min,
 hcr_ip_max, out_min, out_max passed as a vector.
 The default HCR for the MFCLMSEControl class.

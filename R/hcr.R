@@ -1,16 +1,57 @@
-# A bunch of HCR functions
-
-#' Harvest control rule threshold
+#' A bunch of harvest control rule functions
+#'
+#' See details.
 #'
 #' \strong{Threshold}: typical HCR function with the parameters hcr_ip_min,
 #' hcr_ip_max, out_min, out_max passed as a vector.
 #' The default HCR for the MFCLMSEControl class.
 #'
-#' @param hcr_ip Numeric vector of HCR inputs
-#' @param params Numeric vector of HCR parameters.
+#' \strong{Asympotic}: instead of a threshold shape this HCR has a lovely curvy shape based on an asymptotic function.
 #'
+#' \strong{Constant}: an HCR function that just returns the same output irrespective of the SBSBF0 input
+#'
+#' \strong{Hillary step}: basically two thresholds on top of each other, side by side
+#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'hcr_ip_step_min', 'hcr_ip_step_max','out_min', 'out_max', 'step_height'.
+#'
+#' \strong{Constraint}: takes any HCR function as a character string and applies constraint if necessary
+#'
+#' \strong{Constrained asymptotic}: instead of a threshold shape this HCR has a lovely
+#' curvy shape based on an asymptotic function.
+#' Also has a maximum constraint change up or down from previous value
+#'
+#' \strong{Constrained threshold}: like the typical HCR function with the parameters but with a constraint on
+#' how much the output is allowed to change from a reference output. Parameters
+#' are 'hcr_ip_min', 'hcr_ip_max', 'out_min', 'out_max', 'max_change_up',
+#' 'max_change_down'. There is an additional argument 'reference_out' that is
+#' the reference output, i.e. the value to which to the new output is compared.
+#'
+#' \strong{Constrained Hillary step}: like the typical HCR function with the
+#' parameters but with a constraint on how much the output is allowed to change
+#' from a reference output.
+#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'out_min', 'out_max',
+#' 'max_change_up', 'max_change_down'.
+#' There is an additional argument 'reference_out' that is the reference output,
+#' i.e. the value to which to the new output is compared.
+#'
+#' \strong{Asymptotic Hillary step}: Hillary step is basically two thresholds on
+#' top of each other, side by side
+#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'hcr_ip_step_min',
+#' 'hcr_ip_step_max','out_min', 'out_max', 'step_height'.
+#' Adding 'curve' to allow for asymptotic out_left
+#'
+#' \strong{Constrained asymptotic Hillary step}: like the typical HCR function
+#' with the parameters but with a constraint on how much the output is allowed
+#' to change from a reference output. Parameters are 'hcr_ip_min', 'hcr_ip_max',
+#' 'out_min', 'out_max', 'max_change_up', 'max_change_down'. There is an
+#' additional argument 'reference_out' that is the reference output, i.e. the
+#' value to which to the new output is compared.
+#'
+#' @param hcr_ip Numeric vector of HCR inputs
+#' @param params Numeric vector of HCR parameters
+#' @param reference_out The reference level that the constraint is applied to.
+#' @param hcr_fun Character hcr function name
 #' @rdname hcr_funcs
-#' @return Numberic vector of the HCR output
+#' @return Numeric vector of the HCR output
 hcr_threshold <- function(hcr_ip, params) {
   # The standard threshold type of HCR
   if (!all(c("hcr_ip_min", "hcr_ip_max", "out_min", "out_max") %in% names(params))) {
@@ -30,16 +71,7 @@ hcr_threshold <- function(hcr_ip, params) {
   return(out)
 }
 
-
-#' Harvest control rule asymptotic
-#'
-#' \strong{Asympotic}: instead of a threshold shape this HCR has a lovely curvy shape based on an asymptotic function.
-#'
-#' @param hcr_ip Numeric vector of HCR inputs
-#' @param params Numeric vector of HCR parameters.
-#'
 #' @rdname hcr_funcs
-#' @return Numberic vector of the HCR output
 hcr_asymptotic <- function(hcr_ip, params) {
   # The standard threshold type of HCR
   if (!all(c("hcr_ip_min", "hcr_ip_max", "out_min", "out_max", "curve") %in% names(params))) {
@@ -73,10 +105,6 @@ hcr_asymptotic <- function(hcr_ip, params) {
   return(out)
 }
 
-#' Harvest control rule constant
-#'
-#' \strong{Constant}: an HCR function that just returns the same output irrespective of the SBSBF0 input
-#'
 #' @rdname hcr_funcs
 hcr_constant <- function(hcr_ip, params) {
   # A constant output HCR
@@ -86,17 +114,7 @@ hcr_constant <- function(hcr_ip, params) {
   return(rep(unname(params[1]), length(hcr_ip)))
 }
 
-
-#' Harvest control rule Hillary step
-#'
-#' \strong{Hillary step}: basically two thresholds on top of each other, side by side
-#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'hcr_ip_step_min', 'hcr_ip_step_max','out_min', 'out_max', 'step_height'.
-#'
-#'
-#' @param reference_out The reference level that the constraint is applied to.
-#'
 #' @rdname hcr_funcs
-
 hcr_hillary_step <- function(hcr_ip, params) {
   if (!all(c("hcr_ip_min", "hcr_ip_max", "hcr_ip_step_min", "hcr_ip_step_max", "out_min", "out_max", "step_height") %in% names(params))) {
     stop("HCR parameter names do not match those in the HCR function\n")
@@ -122,17 +140,13 @@ hcr_hillary_step <- function(hcr_ip, params) {
   return(out)
 }
 
-
-
-#' Harvest control rule constraint
-#'
-#' \strong{Constraint}: takes any HCR function as a character string and applies constraint if necessary
-#' @param hcr_func Character string of the function name
-#' @param hcr_ip Numeric vector of HCR inputs
-#' @param params Numeric vector of HCR parameters.
-#' @param reference_out The previous output value to compare against
 #' @rdname hcr_funcs
-#' @return Numberic vector of the HCR output
+hcr_asymptotic_constrained <- function(hcr_ip, params, reference_out) {
+  out <- hcr_constrained(hcr_ip = hcr_ip, params = params, reference_out = reference_out, hcr_func = "hcr_asymptotic")
+  return(out)
+}
+
+#' @rdname hcr_funcs
 hcr_constrained <- function(hcr_ip, params, reference_out, hcr_func) {
   # Check we have the change parameters
   if (!all(c("max_change_up", "max_change_down") %in% names(params))) {
@@ -144,75 +158,20 @@ hcr_constrained <- function(hcr_ip, params, reference_out, hcr_func) {
   return(out)
 }
 
-#' Harvest control rule asymptotic with constraint
-#'
-#' \strong{Constrained asymptotic}: instead of a threshold shape this HCR has a lovely
-#' curvy shape based on an asymptotic function.
-#' Also has a maximum constraint change up or down from previous value
-#' @param hcr_ip Numeric vector of HCR inputs
-#' @param params Numeric vector of HCR parameters.
-#' @param reference_out The previous output value to compare against
-#'
 #' @rdname hcr_funcs
-#' @return Numberic vector of the HCR output
-hcr_asymptotic_constrained <- function(hcr_ip, params, reference_out) {
-  out <- hcr_constrained(hcr_ip = hcr_ip, params = params, reference_out = reference_out, hcr_func = "hcr_asymptotic")
-  return(out)
-}
-
-#' Harvest control rule threshold with constraint
-#'
-#' \strong{Constrained threshold}: like the typical HCR function with the parameters but with a constraint on
-#' how much the output is allowed to change from a reference output. Parameters
-#' are 'hcr_ip_min', 'hcr_ip_max', 'out_min', 'out_max', 'max_change_up',
-#' 'max_change_down'. There is an additional argument 'reference_out' that is
-#' the reference output, i.e. the value to which to the new output is compared.
-#'
-#' @param reference_out The reference level that the constraint is applied to.
-#'
-#' @rdname hcr_funcs
-
 hcr_threshold_constrained <- function(hcr_ip, params, reference_out) {
   out <- hcr_constrained(hcr_ip = hcr_ip, params = params, reference_out = reference_out, hcr_func = "hcr_threshold")
   return(out)
 }
 
-
-#' Harvest control rule Hillary step with constraint
-#'
-#' \strong{Constrained Hillary step}: like the typical HCR function with the
-#' parameters but with a constraint on how much the output is allowed to change
-#' from a reference output.
-#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'out_min', 'out_max',
-#' 'max_change_up', 'max_change_down'.
-#' There is an additional argument 'reference_out' that is the reference output,
-#' i.e. the value to which to the new output is compared.
-#'
-#' @param reference_out The reference level that the constraint is applied to.
-#'
 #' @rdname hcr_funcs
-
 hcr_hillary_step_constrained <- function(hcr_ip, params, reference_out) {
   # browser()
   out <- hcr_constrained(hcr_ip = hcr_ip, params = params, reference_out = reference_out, hcr_func = "hcr_hillary_step")
   return(out)
 }
 
-
-
-
-#' Harvest control rule Hillary step with asymptotic curve
-#'
-#' \strong{Asymptotic Hillary step}: Hillary step is basically two thresholds on
-#' top of each other, side by side
-#' Parameters are 'hcr_ip_min', 'hcr_ip_max', 'hcr_ip_step_min',
-#' 'hcr_ip_step_max','out_min', 'out_max', 'step_height'.
-#' Adding 'curve' to allow for asymptotic out_left
-#'
-#' @param reference_out The reference level that the constraint is applied to.
-#'
 #' @rdname hcr_funcs
-
 hcr_asymptotic_hillary_step <- function(hcr_ip, params) {
   if (!all(c(
     "hcr_ip_min",
@@ -259,20 +218,13 @@ hcr_asymptotic_hillary_step <- function(hcr_ip, params) {
   return(out)
 }
 
-#' Harvest control rule Hillary step with asymptotic curve and constraint
-#'
-#' \strong{Constrained asymptotic Hillary step}: like the typical HCR function
-#' with the parameters but with a constraint on how much the output is allowed
-#' to change from a reference output. Parameters are 'hcr_ip_min', 'hcr_ip_max',
-#' 'out_min', 'out_max', 'max_change_up', 'max_change_down'. There is an
-#' additional argument 'reference_out' that is the reference output, i.e. the
-#' value to which to the new output is compared.
-#'
-#' @param reference_out The reference level that the constraint is applied to.
-#'
 #' @rdname hcr_funcs
-
 hcr_asymptotic_hillary_step_constrained <- function(hcr_ip, params, reference_out) {
-  out <- hcr_constrained(hcr_ip = hcr_ip, params = params, reference_out = reference_out, hcr_func = "hcr_asymptotic_hillary_step")
+  out <- hcr_constrained(
+    hcr_ip = hcr_ip,
+    params = params,
+    reference_out = reference_out,
+    hcr_func = "hcr_asymptotic_hillary_step"
+  )
   return(out)
 }
