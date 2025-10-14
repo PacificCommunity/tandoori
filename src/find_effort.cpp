@@ -145,10 +145,10 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   Eigen::VectorXd x = Eigen::VectorXd::Zero(nfisheries);
   double fx = 0;
 
-
   int ncatchfisheries = std::count(target_type.begin(), target_type.end(), 0);
   std::vector<double> final_effort(nfisheries, 0.0);
   int niter = 0;
+  Rcpp::String message("NULL");
 
   // Only run solver if there are catch-based fisheries
   if(ncatchfisheries>0){
@@ -157,17 +157,20 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
     for(int fcount=0; fcount<nfisheries; fcount++){
       final_effort[fcount] = exp(x[fcount]);
     }
+    message = "Solver successful";
   } else {
-    // if all fisheries are effort-based, then their target is acheieved
+    // if all fisheries are effort-based, then the target is achieved
     for (int i = 0; i < nfisheries; i++) {
       final_effort[i] = target[i];
     }
+    message = "No catch fisheries: skipped solver";
   }
 
   Rcpp::List out = Rcpp::List::create(
     Rcpp::Named("effort", final_effort),
     Rcpp::Named("solver_iters", niter),
-    Rcpp::Named("final_value", fx)
+    Rcpp::Named("final_value", fx),
+    Rcpp::Named("message") = message
   );
 
 

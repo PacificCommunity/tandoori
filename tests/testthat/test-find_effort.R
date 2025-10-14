@@ -63,7 +63,7 @@ test_that("basic find_effort w/ all catch fisheries", {
     max_effort = max_effort[, , , , , iter_count, drop = TRUE],
     max_solver_iters = 50
   )
-  expect_equal(length(effout), 3)
+  expect_equal(length(effout), 4)
 })
 
 test_that("find_effort w/ one effort fishery", {
@@ -131,9 +131,7 @@ test_that("find_effort w/ one effort fishery", {
   )
   expect_equal(round(effout$effort[1], 2), round(target[, ac(ycount), "1", scount, , iter_count, drop = TRUE], 2))
 
-  # expect_equal(effout$effort[1], target[, ac(ycount), "1", scount, , iter_count, drop = TRUE], 2)
-
-  # data.table::data.table(effout$effort, target[, ac(ycount), , scount, , iter_count, drop = TRUE])
+  expect_equal(effout$message, "Solver successful")
 })
 
 test_that("Skip minimisation if all fisheries are effort-based", {
@@ -204,6 +202,7 @@ test_that("Skip minimisation if all fisheries are effort-based", {
 
   expect_equal(effout$solver_iters, 0)
   expect_equal(effout$final_value, 0)
+  expect_equal(effout$message, "No catch fisheries: skipped solver")
 
   expect_equal(
     round(effout$effort, 4),
