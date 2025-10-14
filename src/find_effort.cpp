@@ -141,54 +141,37 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   // Create solver object
   LBFGSpp::LBFGSBSolver<double> solver(param);  // New solver class
 
-  // Montana's version:
-  // Only solve for catch fisheries.
-  int ncatchfisheries = std::count(target_type.begin(), target_type.end(), 0);
-  Rprintf("ncatchfisheries: %i\n", ncatchfisheries);
-
-  if(ncatchfisheries>0){
-    std::vector<double> new_target(ncatchfisheries);
-    std::vector<int> new_target_type(ncatchfisheries, 0);
-    Rprintf("new_target: %i\n", new_target[0]);
-    Rprintf("new_target_type: %i\n", new_target_type[0]);
-
-    Rcpp::NumericVector new_target2(ncatchfisheries);
-    Rcpp::NumericVector new_target_type2(ncatchfisheries);
-    for (int i = 0, j = 0; i < nfisheries; i++) {
-      if (target_type[i] == 0) {
-        new_target2[j++] = target[i];
-        new_target_type2[j] = 0;
-      }
-    }
-    Rcpp::Rcout << "The value of new_target2 : " << new_target2 << "\n";
-
-    // EffortFun catch_only_effort_fun(ncatchfisheries, n_after_move, m, waa, selq, new_target, new_target_type, fishery_map);
-  }
-
-  // Eigen::VectorXd new_x = Eigen::VectorXd::Zero(ncatchfisheries);
-  // double fx;
-  // int niter = solver.minimize(catch_only_effort_fun, new_x, fx, lb, ub);
-
   EffortFun effort_fun(nfisheries, n_after_move, m, waa, selq, target, target_type, fishery_map);
   Eigen::VectorXd x = Eigen::VectorXd::Zero(nfisheries);
-  double fx;
-  int niter = solver.minimize(effort_fun, x, fx, lb, ub);
+  double fx = 0;
 
 
-  //Rprintf("niter: %i\n", niter);
-  //Rprintf("x[0]: %f\n", x[0]);
-  //Rprintf("f(x): %f\n", fx);
-
+  int ncatchfisheries = std::count(target_type.begin(), target_type.end(), 0);
   std::vector<double> final_effort(nfisheries, 0.0);
-  // Assuming initial effort is 1.0 !
-  for(int fcount=0; fcount<nfisheries; fcount++){
-    final_effort[fcount] = exp(x[fcount]);
+  int niter = 0;
+
+  // Only run solver if there are catch-based fisheries
+  if(ncatchfisheries>0){
+    niter = solver.minimize(effort_fun, x, fx, lb, ub);
+    // Assuming initial effort is 1.0 !
+    for(int fcount=0; fcount<nfisheries; fcount++){
+      final_effort[fcount] = exp(x[fcount]);
+    }
+  } else {
+    // if all fisheries are effort-based, then their target is acheieved
+    for (int i = 0; i < nfisheries; i++) {
+      final_effort[i] = target[i];
+    }
   }
 
-  return Rcpp::List::create(
+  Rcpp::List out = Rcpp::List::create(
     Rcpp::Named("effort", final_effort),
     Rcpp::Named("solver_iters", niter),
-    Rcpp::Named("final_value", fx));
+    Rcpp::Named("final_value", fx)
+  );
+
+
+  return out;
 }
 
 
