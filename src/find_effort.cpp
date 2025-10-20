@@ -56,7 +56,7 @@ adouble get_error(std::vector<adouble>& log_effort_mult, simple_array_2D& n_afte
       Rcpp::stop("Unrecognised target type for fishery %i.", fcount);
     }
     // Get error
-    error[fcount] = log(target[fcount] / hat[fcount]);
+    error[fcount] = log(target[fcount] / hat[fcount]); // I think this is where it breaks because target is larger than hat
   }
   // Square, sum and return
   // Force type of initial value to be adouble
@@ -110,15 +110,14 @@ double EffortFun::operator()(const Eigen::VectorXd& x, Eigen::VectorXd& grad)  {
 //' @param waa a 2D array of weight-at-age by fishery
 //' @param movement a 3D array of movement-at-age
 //' @param selq a 2D array of selectivity-at-age by fishery
-//' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 //' @param target numeric vector of targets by fishery
 //' @param target_type integer vector of target types by fishery (0 = catch, 1 = effort)
 //' @param fishery_area integer vector indicating which area each fishery operates in
 //' @param max_effort numeric vector of maxmimum effort by fishery
 //' @param max_solver_iters integer maximum number of solver iterations
-//' @return list of solve_effort().
+//' @return list of effort, solver info and updated population quantities
 // [[Rcpp::export]]
-Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
+Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_map, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
 
   bool verbose = false;
   auto nfisheries = selq.get_dim()[1];
@@ -142,27 +141,40 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
   // Create solver object
   LBFGSpp::LBFGSBSolver<double> solver(param);  // New solver class
 
-  // Initialise function to be solved - do taping in constructor
   EffortFun effort_fun(nfisheries, n_after_move, m, waa, selq, target, target_type, fishery_map);
-  // Initial guess
   Eigen::VectorXd x = Eigen::VectorXd::Zero(nfisheries);
-  double fx;
-  int niter = solver.minimize(effort_fun, x, fx, lb, ub);
+  double fx = 0;
 
-  //Rprintf("niter: %i\n", niter);
-  //Rprintf("x[0]: %f\n", x[0]);
-  //Rprintf("f(x): %f\n", fx);
-
+  int ncatchfisheries = std::count(target_type.begin(), target_type.end(), 0);
   std::vector<double> final_effort(nfisheries, 0.0);
-  // Assuming initial effort is 1.0 !
-  for(int fcount=0; fcount<nfisheries; fcount++){
-    final_effort[fcount] = exp(x[fcount]);
+  int niter = 0;
+  Rcpp::String message("NULL");
+
+  // Only run solver if there are catch-based fisheries
+  if(ncatchfisheries>0){
+    niter = solver.minimize(effort_fun, x, fx, lb, ub);
+    // Assuming initial effort is 1.0 !
+    for(int fcount=0; fcount<nfisheries; fcount++){
+      final_effort[fcount] = exp(x[fcount]);
+    }
+    message = "Solver successful";
+  } else {
+    // if all fisheries are effort-based, then the target is achieved
+    for (int i = 0; i < nfisheries; i++) {
+      final_effort[i] = target[i];
+    }
+    message = "No catch fisheries: skipped solver";
   }
 
-  return Rcpp::List::create(
+  Rcpp::List out = Rcpp::List::create(
     Rcpp::Named("effort", final_effort),
     Rcpp::Named("solver_iters", niter),
-    Rcpp::Named("final_value", fx));
+    Rcpp::Named("final_value", fx),
+    Rcpp::Named("message") = message
+  );
+
+
+  return out;
 }
 
 
@@ -176,7 +188,6 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
 //' @param waa a 2D array of weight-at-age by fishery
 //' @param movement a 3D array of movement-at-age
 //' @param selq a 2D array of selectivity-at-age by fishery
-//' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 //' @param target numeric vector of targets by fishery
 //' @param target_type integer vector of target types by fishery (0 = catch, 1 = effort)
 //' @param fishery_area integer vector indicating which area each fishery operates in
@@ -184,9 +195,9 @@ Rcpp::List solve_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_ar
 //' @param max_solver_iters integer maximum number of solver iterations
 //' @return list of solve_effort().
 // [[Rcpp::export]]
-Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
+Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
 
-  Rcpp::List out = solve_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters);
+  Rcpp::List out = solve_effort(n_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters);
 
   return out;
 }
@@ -201,7 +212,6 @@ Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_arr
 //' @param waa a 2D array of weight-at-age by fishery
 //' @param movement a 3D array of movement-at-age
 //' @param selq a 2D array of selectivity-at-age by fishery
-//' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 //' @param target vector of targets by fishery
 //' @param target_type vector of target types by fishery (0 = catch, 1 = effort)
 //' @param fishery_area integer vector indicating which area each fishery operates in
@@ -209,9 +219,9 @@ Rcpp::List find_effort(simple_array_2D n_pre_move, simple_array_2D m, simple_arr
 //' @param max_solver_iters integer maximum number of solver iterations
 //' @return list of effort, solver info and updated population quantities
 // [[Rcpp::export]]
-Rcpp::List project(simple_array_2D n_pre_move, simple_array_2D n0_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, double effort_mult_initial, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
+Rcpp::List project(simple_array_2D n_pre_move, simple_array_2D n0_pre_move, simple_array_2D m, simple_array_2D waa, simple_array_3D movement, simple_array_2D selq, Rcpp::NumericVector target, Rcpp::IntegerVector target_type, Rcpp::IntegerVector fishery_area, Rcpp::NumericVector max_effort, const unsigned int max_solver_iters){
 
-  Rcpp::List solve_out = solve_effort(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters);
+  Rcpp::List solve_out = solve_effort(n_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters);
 
   std::vector<double> effort = solve_out["effort"];
 

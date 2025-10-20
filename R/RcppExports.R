@@ -32,15 +32,14 @@ NULL
 #' @param waa a 2D array of weight-at-age by fishery
 #' @param movement a 3D array of movement-at-age
 #' @param selq a 2D array of selectivity-at-age by fishery
-#' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 #' @param target numeric vector of targets by fishery
 #' @param target_type integer vector of target types by fishery (0 = catch, 1 = effort)
 #' @param fishery_area integer vector indicating which area each fishery operates in
 #' @param max_effort numeric vector of maxmimum effort by fishery
 #' @param max_solver_iters integer maximum number of solver iterations
-#' @return list of solve_effort().
-solve_effort <- function(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_map, max_effort, max_solver_iters) {
-    .Call(`_tandoori_solve_effort`, n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_map, max_effort, max_solver_iters)
+#' @return list of effort, solver info and updated population quantities
+solve_effort <- function(n_pre_move, m, waa, movement, selq, target, target_type, fishery_map, max_effort, max_solver_iters) {
+    .Call(`_tandoori_solve_effort`, n_pre_move, m, waa, movement, selq, target, target_type, fishery_map, max_effort, max_solver_iters)
 }
 
 #' Finds the effort that achieves the supplied catch target.
@@ -53,15 +52,14 @@ solve_effort <- function(n_pre_move, m, waa, movement, selq, effort_mult_initial
 #' @param waa a 2D array of weight-at-age by fishery
 #' @param movement a 3D array of movement-at-age
 #' @param selq a 2D array of selectivity-at-age by fishery
-#' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 #' @param target numeric vector of targets by fishery
 #' @param target_type integer vector of target types by fishery (0 = catch, 1 = effort)
 #' @param fishery_area integer vector indicating which area each fishery operates in
 #' @param max_effort numeric vector of maxmimum effort by fishery
 #' @param max_solver_iters integer maximum number of solver iterations
 #' @return list of solve_effort().
-find_effort <- function(n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters) {
-    .Call(`_tandoori_find_effort`, n_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters)
+find_effort <- function(n_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters) {
+    .Call(`_tandoori_find_effort`, n_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters)
 }
 
 #' Projects fishery with catch or effort targets.
@@ -74,15 +72,14 @@ find_effort <- function(n_pre_move, m, waa, movement, selq, effort_mult_initial,
 #' @param waa a 2D array of weight-at-age by fishery
 #' @param movement a 3D array of movement-at-age
 #' @param selq a 2D array of selectivity-at-age by fishery
-#' @param effort_mult_initial numeric initial guess of effort multiplier for solver
 #' @param target vector of targets by fishery
 #' @param target_type vector of target types by fishery (0 = catch, 1 = effort)
 #' @param fishery_area integer vector indicating which area each fishery operates in
 #' @param max_effort numeric vector of maxmimum effort by fishery
 #' @param max_solver_iters integer maximum number of solver iterations
 #' @return list of effort, solver info and updated population quantities
-project <- function(n_pre_move, n0_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters) {
-    .Call(`_tandoori_project`, n_pre_move, n0_pre_move, m, waa, movement, selq, effort_mult_initial, target, target_type, fishery_area, max_effort, max_solver_iters)
+project <- function(n_pre_move, n0_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters) {
+    .Call(`_tandoori_project`, n_pre_move, n0_pre_move, m, waa, movement, selq, target, target_type, fishery_area, max_effort, max_solver_iters)
 }
 
 int_test <- function(dummy) {

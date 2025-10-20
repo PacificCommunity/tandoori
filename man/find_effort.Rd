@@ -10,7 +10,6 @@ find_effort(
   waa,
   movement,
   selq,
-  effort_mult_initial,
   target,
   target_type,
   fishery_area,
@@ -28,8 +27,6 @@ find_effort(
 \item{movement}{a 3D array of movement-at-age}
 
 \item{selq}{a 2D array of selectivity-at-age by fishery}
-
-\item{effort_mult_initial}{numeric initial guess of effort multiplier for solver}
 
 \item{target}{numeric vector of targets by fishery}
 
