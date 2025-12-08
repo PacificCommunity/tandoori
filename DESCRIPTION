@@ -35,6 +35,8 @@ Collate:
   RcppExports.R
   data.R
   simple_mp_class.R
+  hcr.R
+  catch-routine-registration.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
