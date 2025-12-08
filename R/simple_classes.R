@@ -29,7 +29,7 @@
 #'     \item{Iters}{The dimname for iter[1] should be '1'.}
 #'     \item{Dimnames}{The name of the quant dimension must be the same for all FLQuant slots.}
 #' }
-#' @export
+#' @exportClass simpleBiol
 #' @author Finlay Scott
 #' @keywords classes
 
@@ -92,7 +92,7 @@ setClass("simpleBiol",
 #'     \item{Dimnames}{The name of the quant dimension must be the same for all FLQuant slots.}
 #' }
 #' @import FLCore
-#' @export
+#' @exportClass simpleFisheries
 #' @author Finlay Scott
 #' @keywords classes
 
