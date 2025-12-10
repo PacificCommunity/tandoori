@@ -125,7 +125,7 @@ This includes information on abundances, natural mortality and maturity.
 \section{Validity}{
  \describe{
 \item{Dimensions}{All FLQuant slots must have iters equal to 1 or 'n'.}
-\item{Iters}{The dimname for iter\link{1} should be '1'.}
+\item{Iters}{The dimname for iter\link{1} should be \code{1}.}
 \item{Dimnames}{The name of the quant dimension must be the same for all FLQuant slots.}
 }
 }

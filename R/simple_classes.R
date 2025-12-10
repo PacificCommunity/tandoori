@@ -26,7 +26,7 @@
 #'   \item{desc}{Brief description of the object. \code{character}.}
 #' @section Validity: \describe{
 #'     \item{Dimensions}{All FLQuant slots must have iters equal to 1 or 'n'.}
-#'     \item{Iters}{The dimname for iter[1] should be '1'.}
+#'     \item{Iters}{The dimname for iter[1] should be `1`.}
 #'     \item{Dimnames}{The name of the quant dimension must be the same for all FLQuant slots.}
 #' }
 #' @exportClass simpleBiol
@@ -88,7 +88,7 @@ setClass("simpleBiol",
 #'   \item{desc}{Brief description of the object. \code{character}.}
 #' @section Validity: \describe{
 #'     \item{Dimensions}{All FLQuant slots must have iters equal to 1 or 'n'.}
-#'     \item{Iters}{The dimname for iter[1] should be '1'.}
+#'     \item{Iters}{The dimname for iter[1] should be `1`.}
 #'     \item{Dimnames}{The name of the quant dimension must be the same for all FLQuant slots.}
 #' }
 #' @import FLCore
